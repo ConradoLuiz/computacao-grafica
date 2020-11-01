@@ -31,6 +31,7 @@ def desenhaFuncao():
         y = y0
         while y < yf:
             z = paraboloide(x,y)
+            glColor3f(x,y,z)
             glVertex3f(x,y,z)
             y += dy
         x += dx

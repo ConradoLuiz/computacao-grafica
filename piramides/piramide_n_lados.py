@@ -16,7 +16,7 @@ isDragging = False
 
 v = []
 r = 1
-n_lados = 20
+n_lados = 100
 a = (2*math.pi)/n_lados
 
 for i in range(0,n_lados):
