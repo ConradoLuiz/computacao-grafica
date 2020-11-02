@@ -13,8 +13,8 @@ x0 = -1
 y0 = -1
 xf = 1
 yf = 1
-dx = 0.1
-dy = 0.1
+dx = 0.05
+dy = 0.05
 
 pMouseX = None
 pMouseY = None
@@ -25,7 +25,8 @@ a = 0
 
 def paraboloide(x, y):
     # Paraboloide Circular
-    return x**2+y**2
+    return x**2 + y**2
+    # return x**2 + math.sqrt(abs(y))
 
 
 v = []
@@ -39,35 +40,32 @@ while x < xf:
     x += dx
 
 
+def myMap(v, b1, t1, b2, t2):
+    return (v - b1)/(t1 - b1) * (t2 - b2) + b2
+
+
 def desenhaFuncao():
 
     glBegin(GL_TRIANGLES)
+    for vertex in v:
 
-    x = x0
-    while x < xf:
-        y = y0
-        while y < yf:
+        z = paraboloide(vertex[0], vertex[1])
+        glColor3f(vertex[0], vertex[1], z)
+        glVertex3f(vertex[0], vertex[1], z)
 
-            z = paraboloide(x, y)
-            glColor3f(x, y, z)
-            glVertex3f(x, y, z)
+        y2 = vertex[1] + dy
+        z2 = paraboloide(vertex[0], y2)
+        glVertex3f(vertex[0], y2, z2)
 
-            y2 = y + dy
-            z2 = paraboloide(x, y2)
-            glVertex3f(x, y2, z2)
+        x2 = vertex[0] + dx
+        z3 = paraboloide(x2, vertex[1])
+        glVertex3f(x2, vertex[1], z3)
 
-            x2 = x + dx
-            z3 = paraboloide(x2, y)
-            glVertex3f(x2, y, z3)
+        z4 = paraboloide(x2, y2)
 
-            z4 = paraboloide(x2, y2)
-
-            glVertex3f(x, y2, z2)
-            glVertex3f(x2, y, z3)
-            glVertex3f(x2, y2, z4)
-
-            y += dy
-        x += dx
+        glVertex3f(vertex[0], y2, z2)
+        glVertex3f(x2, vertex[1], z3)
+        glVertex3f(x2, y2, z4)
     glEnd()
 
 
@@ -81,7 +79,7 @@ def desenha():
     glPopMatrix()
 
     # glBegin(GL_POINTS)
-    # for vx in v:
+    # for vx in v[:25]:
     #     glVertex3fv(vx)
 
     # glEnd()
