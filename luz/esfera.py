@@ -28,10 +28,10 @@ def reshape(w, h):
 
 def init():
     mat_ambient = (0.6, 0.0, 0.0, 1.0)
-    mat_diffuse = (1.0, 0.0, 0.0, 1.0)
+    mat_diffuse = (0, 0.0, 1.0, 1.0)
     mat_specular = (1.0, 1.0, 1.0, 1.0)
     mat_shininess = (50,)
-    light_position = (5.0, 5.0, 5.0, 0.0)
+    light_position = (3, 3.0, 3.0, 0.0)
     glClearColor(0.0, 0.0, 0.0, 0.0)
     glShadeModel(GL_SMOOTH)
 
