@@ -58,4 +58,6 @@ class PlyReader():
             glEndList()
 
     def draw(self):
+        glPushMatrix()
         glCallList(self.gl_list)
+        glPopMatrix()
