@@ -2,6 +2,7 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GLUT import *
 from Airplane import *
+from Terrain import *
 import png
 import math
 
@@ -18,7 +19,7 @@ class FlightSimulator():
         self.wZ = 0
 
         self.zoom = 0
-        self.deltaZoom = 0.1
+        self.deltaZoom = 0.5
 
         self.previousMouseX = 0
         self.previousMouseY = 0
@@ -44,10 +45,10 @@ class FlightSimulator():
 
         self.initGL()
 
-        glutTimerFunc(self.delay, self.timer, 1)
+        glutTimerFunc(self.delay, self.timer, self.delay)
         glutMouseFunc(self.mouse)
         glutSpecialFunc(self.specialKeys)
-        # glutMotionFunc(self.mouseDrag)
+        glutMotionFunc(self.mouseDrag)
         glutKeyboardFunc(self.keys)
 
     def initGL(self):
@@ -57,25 +58,32 @@ class FlightSimulator():
         glClearDepth(1.0)
         glEnable(GL_DEPTH_TEST)
         glMatrixMode(GL_PROJECTION)
-        gluPerspective(45, self.width/self.height, 0.1, 100.0)
+        gluPerspective(45, self.width/self.height, 0.1, 100000.0)
         glShadeModel(GL_SMOOTH)
         glClearColor(53/255, 81/255, 92/255, 1.)
 
         mat_ambient = (0.6, 0.0, 0.0, 1.0)
         mat_diffuse = (0, 0.0, 1.0, 1.0)
         mat_specular = (1.0, 1.0, 1.0, 1.0)
-        mat_shininess = (50,)
-        light_position = (3, 3.0, 3.0, 0.0)
+        mat_shininess = (10,)
 
         glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient)
         glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse)
         glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular)
         glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess)
+
+        light_position = (0, 10, 0, 0.0)
         glLightfv(GL_LIGHT0, GL_POSITION, light_position)
-        glEnable(GL_LIGHTING)
         glEnable(GL_LIGHT0)
 
+        light_position = (0, -5, 0, 0.0)
+        glLightfv(GL_LIGHT1, GL_POSITION, light_position)
+        glEnable(GL_LIGHT1)
+
+        glEnable(GL_LIGHTING)
+
         self.airplane = Airplane()
+        self.terrain = Terrain(self.width, self.height)
 
     def loadTextures(self):
         self.textures = glGenTextures(2)
@@ -117,7 +125,7 @@ class FlightSimulator():
 
     def timer(self, i):
         glutPostRedisplay()
-        glutTimerFunc(self.delay, self.timer, 1)
+        glutTimerFunc(self.delay, self.timer, i+self.delay)
 
     def run(self):
         glutMainLoop()
@@ -134,19 +142,17 @@ class FlightSimulator():
             self.isDragging = True
         if btn == 0 and state == 1:
             self.isDragging = False
-        if btn == 2 and state == 0:
-            pause_rotation = not pause_rotation
+        # if btn == 2 and state == 0:
+        #     pause_rotation = not pause_rotation
 
-    # def mouseDrag(self, x, y):
-    #     if self.isDragging:
-    #         glMatrixMode(GL_MODELVIEW)
-    #         glTranslatef(5 * (x-self.previousMouseX)/self.width,
-    #                      5 * -(y-self.previousMouseY)/self.height, 0)
-    #         glMatrixMode(GL_MODELVIEW)
-    #         # self.cameraXRot = (x-self.previousMouseX/self.width)
-    #         # self.cameraZRot = (y-self.previousMouseY/self.height)
-    #         self.previousMouseX = x
-    #         self.previousMouseY = y
+    def mouseDrag(self, x, y):
+        if self.isDragging:
+            glTranslatef(5 * (x-self.previousMouseX)/self.width,
+                         5 * -(y-self.previousMouseY)/self.height, 0)
+            # self.cameraXRot = (x-self.previousMouseX/self.width)
+            # self.cameraZRot = (y-self.previousMouseY/self.height)
+            self.previousMouseX = x
+            self.previousMouseY = y
 
     def specialKeys(self, key, x, y):
         self.airplane.command(key)
@@ -163,7 +169,7 @@ class FlightSimulator():
         # self.cameraZ = (self.airplane.z + self.zoom + self.cameraDistance) * \
         #     self.airplane.zRot
         self.cameraX = (20 + self.zoom)
-        self.cameraY = 20
+        self.cameraY = 20 + self.zoom
         self.cameraZ = (-20 - self.zoom)
 
         self.camLookX = 0
@@ -186,13 +192,14 @@ class FlightSimulator():
 
         self.airplane.updatePos()
         self.airplane.draw()
+        self.terrain.draw()
 
         # ESFERA NO CENTRO DO MUNDO
-        glutWireSphere(2, 30, 30)
+        # glutWireSphere(2, 30, 30)
 
         # CUBO NA DIREITA DO CENTRO
-        glTranslatef(0, 0, 7)
-        glutSolidCube(4)
+        # glTranslatef(0, 0, 7)
+        # glutSolidCube(4)
 
         glPopMatrix()
 

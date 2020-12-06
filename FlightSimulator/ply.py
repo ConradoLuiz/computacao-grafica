@@ -1,12 +1,13 @@
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
 from OpenGL.GL import *
+import Utils
 import itertools
 
 
 class PlyReader():
 
-    def __init__(self, filename, cor=[0, 0, 1]):
+    def __init__(self, filename, frontFace=GL_CCW, cor=[0, 0, 1]):
         with open(filename, 'r') as file:
             self.end_of_header = 0
             self.n_vertex = 0
@@ -45,14 +46,15 @@ class PlyReader():
 
             self.gl_list = glGenLists(1)
             glNewList(self.gl_list, GL_COMPILE)
-            glFrontFace(GL_CCW)
+            glFrontFace(GL_CW)
 
             for face in self.faces:
                 glBegin(GL_POLYGON)
+                normal = Utils.calculaNormalFace(face, self.vertex)
                 for vertex in face:
                     # print(self.vertex[vertex])
                     # glColor3fv(self.ver)
-                    glNormal3fv(self.vertex[vertex][0:3])
+                    glNormal3fv(normal)
                     glVertex3fv(self.vertex[vertex][0:3])
                 glEnd()
             glEndList()

@@ -1,4 +1,5 @@
 from OpenGL.GL import *
+from Utils import *
 
 
 def MTL(path, filename):
