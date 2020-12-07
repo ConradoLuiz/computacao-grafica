@@ -3,6 +3,7 @@ from OpenGL.GLU import *
 from OpenGL.GLUT import *
 from Airplane import *
 from Terrain import *
+import Utils
 import png
 import math
 
@@ -18,8 +19,8 @@ class FlightSimulator():
         self.wY = 0
         self.wZ = 0
 
-        self.zoom = 0
-        self.deltaZoom = 0.5
+        self.zoom = 1
+        self.deltaZoom = 0.1
 
         self.previousMouseX = 0
         self.previousMouseY = 0
@@ -27,12 +28,16 @@ class FlightSimulator():
         self.cameraDistance = 25
         self.cameraHeight = 4
 
-        self.cameraX = 0
-        self.cameraY = 0
+        self.cameraX = 20
+        self.cameraY = 20
         self.cameraZ = 0 + self.cameraDistance
 
-        self.cameraXRot = 1
-        self.cameraZRot = 1
+        self.cameraXRot = 0
+        self.cameraZRot = 0
+
+        self.cameraRotSpeed = 1.5
+
+        self.debug = True
 
         glutInit(sys.argv)
         glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA |
@@ -60,7 +65,8 @@ class FlightSimulator():
         glMatrixMode(GL_PROJECTION)
         gluPerspective(45, self.width/self.height, 0.1, 100000.0)
         glShadeModel(GL_SMOOTH)
-        glClearColor(53/255, 81/255, 92/255, 1.)
+
+        glClearColor(69/255, 160/255, 200/255, 1.0)
 
         mat_ambient = (0.6, 0.0, 0.0, 1.0)
         mat_diffuse = (0, 0.0, 1.0, 1.0)
@@ -82,6 +88,9 @@ class FlightSimulator():
 
         glEnable(GL_LIGHTING)
 
+        self.loadObjects()
+
+    def loadObjects(self):
         self.airplane = Airplane()
         self.terrain = Terrain(self.width, self.height)
 
@@ -125,7 +134,12 @@ class FlightSimulator():
 
     def timer(self, i):
         glutPostRedisplay()
-        glutTimerFunc(self.delay, self.timer, i+self.delay)
+        value = i + self.delay
+
+        self.airplane.timer(self.delay, value)
+        self.terrain.timer(self.delay, value)
+
+        glutTimerFunc(self.delay, self.timer, value)
 
     def run(self):
         glutMainLoop()
@@ -133,9 +147,12 @@ class FlightSimulator():
     def mouse(self, btn, state, mouseX, mouseY):
         # btn -> 0 == botao esquerdo; 1 == botao rolagem; 2 == botao direito; 3 == rolagem para cima; 4 == rolagem para baixo
         if btn == 3:
-            self.zoom -= self.deltaZoom
+            # self.zoom -= self.deltaZoom
+            self.zoomCamera(0.8)
         if btn == 4:
-            self.zoom += self.deltaZoom
+            # self.zoom += self.deltaZoom
+            self.zoomCamera(1.1)
+
         if btn == 0 and state == 0:
             self.previousMouseX = mouseX
             self.previousMouseY = mouseY
@@ -147,10 +164,13 @@ class FlightSimulator():
 
     def mouseDrag(self, x, y):
         if self.isDragging:
-            glTranslatef(5 * (x-self.previousMouseX)/self.width,
-                         5 * -(y-self.previousMouseY)/self.height, 0)
+            # glTranslatef(5 * (x-self.previousMouseX)/self.width,
+            #              5 * -(y-self.previousMouseY)/self.height, 0)
             # self.cameraXRot = (x-self.previousMouseX/self.width)
             # self.cameraZRot = (y-self.previousMouseY/self.height)
+
+            self.rotateCameraHorizontal((x-self.previousMouseX))
+            self.rotateCameraVertical((y-self.previousMouseY))
             self.previousMouseX = x
             self.previousMouseY = y
 
@@ -160,6 +180,22 @@ class FlightSimulator():
 
     def keys(self, key, x, y):
         self.airplane.command(key)
+        if key == b'p':
+            self.debug != self.debug
+        if key == b'r':
+            del self.airplane
+            del self.terrain
+            self.loadObjects()
+        if key == b'i':
+            self.rotateCameraHorizontal(self.cameraRotSpeed)
+            # self.cameraXRot += 0.1
+            # self.cameraZRot += 0.1
+
+        if key == b'o':
+            self.rotateCameraHorizontal(-self.cameraRotSpeed)
+            # self.cameraXRot -= 0.1
+            # self.cameraZRot -= 0.1
+
         glutPostRedisplay()
 
     def calculateCameraPos(self):
@@ -168,13 +204,46 @@ class FlightSimulator():
         # # (+self.airplane.zRot * .2)
         # self.cameraZ = (self.airplane.z + self.zoom + self.cameraDistance) * \
         #     self.airplane.zRot
-        self.cameraX = (20 + self.zoom)
-        self.cameraY = 20 + self.zoom
-        self.cameraZ = (-20 - self.zoom)
+
+        # self.cameraX = self.cameraX + self.zoom
+        # self.cameraY = 20 + self.zoom
+        # self.cameraZ = (-20 - self.zoom)
 
         self.camLookX = 0
         self.camLookY = 0
         self.camLookZ = 0
+        pass
+
+    def rotateCameraHorizontal(self, rad):
+        self.cameraX = self.cameraX * \
+            math.cos(Utils.radToDegrees(rad)) - self.cameraZ * \
+            math.sin(Utils.radToDegrees(rad))
+
+        self.cameraZ = self.cameraX * \
+            math.sin(Utils.radToDegrees(rad)) + self.cameraZ * \
+            math.cos(Utils.radToDegrees(rad))
+
+    def rotateCameraVertical(self, rad):
+        proj = Utils.project_onto_plane(
+            (self.cameraX, self.cameraY, self.cameraZ), (0, 1, 0))
+        # print(proj)
+        self.cameraX = proj[0] * \
+            math.cos(Utils.radToDegrees(rad)) - self.cameraY * \
+            math.sin(Utils.radToDegrees(rad))
+
+        self.cameraY = proj[0] * \
+            math.sin(Utils.radToDegrees(rad)) + self.cameraY * \
+            math.cos(Utils.radToDegrees(rad))
+
+        # self.cameraZ = proj[1] * \
+        #     math.cos(Utils.radToDegrees(rad)) - self.cameraY * \
+        #     math.sin(Utils.radToDegrees(rad))
+
+    def zoomCamera(self, delta):
+        # self.zoom += delta
+        self.cameraX *= delta
+        self.cameraY *= delta
+        self.cameraZ *= delta
 
     def draw(self):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -183,10 +252,7 @@ class FlightSimulator():
         # print(self.cameraXRot)
         # print(self.cameraZRot)
         glPushMatrix()
-        # glBindTexture(GL_TEXTURE_2D, self.textures[0])
-        # glutSolidSphere(5, 30, 30)
-        # glutSolidSphere(2, 30, 30)
-        # glRotatef()
+
         gluLookAt(self.cameraX, self.cameraY,
                   self.cameraZ, self.camLookX, self.camLookY, self.camLookZ, 0, 1, 0)
 
@@ -201,6 +267,33 @@ class FlightSimulator():
         # glTranslatef(0, 0, 7)
         # glutSolidCube(4)
 
+        if self.debug:
+            # print('Zoom', self.zoom)
+            # print('Delta Zoom', self.deltaZoom)
+            glTranslatef(0, 0, 0)
+            Materials.GeneralMaterial((1, 1, 1, 1))
+            glutSolidSphere(.1, 30, 30)
+            # X
+            Materials.GeneralMaterial((1, 0, 0, 1))
+            glLineWidth(3.0)
+            glBegin(GL_LINES)
+            glVertex3f(0, 0, 0)
+            glVertex3f(4, 0, 0)
+            glEnd()
+            # Y
+            Materials.GeneralMaterial((0, 1, 0, 1))
+            glLineWidth(3.0)
+            glBegin(GL_LINES)
+            glVertex3f(0, 0, 0)
+            glVertex3f(0, 4, 0)
+            glEnd()
+            # Z
+            Materials.GeneralMaterial((0, 0, 1, 1))
+            glLineWidth(3.0)
+            glBegin(GL_LINES)
+            glVertex3f(0, 0, 0)
+            glVertex3f(0, 0, 4)
+            glEnd()
         glPopMatrix()
 
         glutSwapBuffers()

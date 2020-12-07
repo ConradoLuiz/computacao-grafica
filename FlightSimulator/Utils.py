@@ -12,6 +12,10 @@ def myMap(v, b1, t1, b2, t2):
     return (v - b1)/(t1 - b1) * (t2 - b2) + b2
 
 
+def radToDegrees(rad):
+    return rad * (math.pi/180)
+
+
 def calcNormalPolygon(p):
     normal = [0, 0, 0]
     for i, v in enumerate(p):
@@ -46,3 +50,26 @@ def calculaNormalFace(face, vertices):
     N = ((U[y]*V[z]-U[z]*V[y]), (U[z]*V[x]-U[x]*V[z]), (U[x]*V[y]-U[y]*V[x]))
     NLength = math.sqrt(N[x]*N[x]+N[y]*N[y]+N[z]*N[z])
     return (N[x]/NLength, N[y]/NLength, N[z]/NLength)
+
+
+def dot_product(x, y):
+    return sum([x[i] * y[i] for i in range(len(x))])
+
+
+def norm(x):
+    return math.sqrt(dot_product(x, x))
+
+
+def normalize(x):
+    return [x[i] / norm(x) for i in range(len(x))]
+
+
+def project_onto_plane(x, n):
+    d = dot_product(x, n) / norm(n)
+    p = [d * normalize(n)[i] for i in range(len(n))]
+    return [x[i] - p[i] for i in range(len(x))]
+
+
+if __name__ == '__main__':
+    print(math.sin(radToDegrees(90)))
+    print(math.sin(math.pi/2))

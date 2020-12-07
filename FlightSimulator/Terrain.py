@@ -1,6 +1,7 @@
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GLUT import *
+import Materials
 import noise
 import Utils
 import random
@@ -22,8 +23,9 @@ class Terrain():
         self.delta = 0.1
 
         self.vertex = []
-        # self.heights = [[None] * (self.xMin + self.xMax) /
-        #                 self.delta] * (self.xMin + self.xMax) / self.delta
+
+        self.zoffSeed = random.uniform(-1, 1)
+        self.xoffSeed = random.uniform(-1, 1)
 
         self.heights = [[0 for _ in range(
             math.ceil((abs(self.xMin) + self.xMax)/self.delta)+2)] for _ in range(
@@ -36,38 +38,30 @@ class Terrain():
         # self.generateList()
 
         self.posX = 0.
-        self.posY = -3.
+        self.posY = -30.
         self.posZ = 0.
 
     def defineMaterial(self):
-        mat_ambient = (0.6, 0.0, 0.0, 1.0)
-        mat_diffuse = (155/255, 118/255, 83/255, 1.0)
-        mat_specular = (0.1, .1, .1, 1.0)
-        mat_shininess = (2,)
-
-        glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient)
-        glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse)
-        glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular)
-        glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess)
+        # Materials.OceanMaterial()
+        Materials.MountainMaterial()
 
     def generateHeight(self):
         z = self.zMin
         i = 0
-        zoff = random.uniform(-1, 1)
-        xoffSeed = random.uniform(-1, 1)
+        self.zoff = self.zoffSeed
         while z <= self.zMax + self.delta:
             x = self.xMin
             j = 0
-            xoff = xoffSeed
+            self.xoff = self.xoffSeed
             while x <= self.xMax + self.delta:
                 # print(j, j+1)
-                self.heights[i][j] = noise.pnoise2(xoff, zoff)
+                self.heights[i][j] = noise.pnoise2(self.xoff, self.zoff)
                 x += self.delta
-                xoff += self.delta
+                self.xoff += self.delta
                 j += 1
             i += 1
             z += self.delta
-            zoff += self.delta
+            self.zoff += self.delta
 
     def createMesh(self):
 
@@ -127,11 +121,19 @@ class Terrain():
         glEnd()
         glEndList()
 
+    def timer(self, delay, value):
+        if value % (delay) == 0:
+            self.zoffSeed += 0.001
+            self.xoffSeed += 0.001
+            self.generateHeight()
+            self.createMesh()
+        pass
+
     def draw(self):
         glPushMatrix()
 
         glTranslatef(self.posX, self.posY, self.posZ)
-        glScalef(50, 50, 50)
+        glScalef(100, 20, 100)
         glCallList(self.glLists[-1])
 
         glPopMatrix()

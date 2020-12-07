@@ -2,19 +2,21 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GLUT import *
 # from OBJFileLoader import *
+import Utils
 from ply import *
 import math
+import Materials
 
 
 class Airplane():
     def __init__(self):
         self.model = PlyReader("models/airplane/airplane.ply", frontFace=GL_CW)
 
-        self.debug = False
+        self.debug = True
 
         self.modelOffset = -7
 
-        self.forwardX = 0
+        self.forwardX = -1
         self.forwardY = 0
         self.forwardZ = 0
 
@@ -34,7 +36,7 @@ class Airplane():
         self.yRot = 0
         self.zRot = 0
 
-        self.xRotV = 1.5
+        self.xRotV = 1
         self.yRotV = 1
         self.zRotV = 1
 
@@ -42,38 +44,68 @@ class Airplane():
 
         if key == b'p':
             self.debug = not self.debug
+            print("DEBUG ATIVO") if self.debug else print("DEBUG DESATIVADO")
 
         # SETA ESQUERDA
         if key == 100:
             self.xRot += self.xRotV
-            self.forwardZ = math.cos(self.xRot)
-            self.forwardY = math.sin(-self.xRot)
+            degree = Utils.radToDegrees(-self.xRotV)
+            self.forwardZ = self.forwardZ * \
+                math.cos(degree) - self.forwardY * math.sin(degree)
+
+            self.forwardY = self.forwardZ * \
+                math.sin(degree) + self.forwardY * math.cos(degree)
 
         # SETA DIREITA
         elif key == 102:
             self.xRot -= self.xRotV
-            self.forwardZ = math.cos(self.xRot)
-            self.forwardY = math.sin(-self.xRot)
+            degree = Utils.radToDegrees(+self.xRotV)
+            self.forwardZ = self.forwardZ * \
+                math.cos(degree) - self.forwardY * math.sin(degree)
+
+            self.forwardY = self.forwardZ * \
+                math.sin(degree) + self.forwardY * math.cos(degree)
 
         # SETA CIMA
         elif key == 101:
             self.zRot += self.zRotV
-            self.forwardY = math.cos(self.zRot)
-            self.forwardX = math.sin(self.zRot)
+            degree = Utils.radToDegrees(self.zRotV)
+            self.forwardX = self.forwardX * \
+                math.cos(degree) - self.forwardY * math.sin(degree)
+
+            self.forwardY = self.forwardX * \
+                math.sin(degree) + self.forwardY * math.cos(degree)
 
         # SETA BAIXO
         elif key == 103:
             self.zRot -= self.zRotV
-            self.forwardY = math.cos(self.zRot)
-            self.forwardX = math.sin(self.zRot)
+            degree = Utils.radToDegrees(-self.zRotV)
+            self.forwardX = self.forwardX * \
+                math.cos(degree) - self.forwardY * math.sin(degree)
+
+            self.forwardY = self.forwardX * \
+                math.sin(degree) + self.forwardY * math.cos(degree)
 
         # PARA FRENTE
         elif key == b'f':
-            self.x -= self.forwardX * self.xV
+            self.x += self.forwardX * (self.xV)
+            self.y += self.forwardY * (self.xV)
+            self.z += self.forwardZ * (self.xV)
+            # self.x += self.forwardX * (-1)
+            # self.y += self.forwardY * (0)
+            # self.z += self.forwardZ * (0)
+            # self.x -= self.xV
 
         # PARA TRAS
         elif key == b'g':
-            self.x += self.forwardX * self.xV
+            # self.x += self.forwardX * (+self.xV)
+            self.x -= self.forwardX * (self.xV)
+            self.y -= self.forwardY * (self.xV)
+            self.z -= self.forwardZ * (self.xV)
+            # self.x += self.xV
+
+    def timer(self, delay, value):
+        pass
 
     def defineMaterial(self):
         mat_ambient = (1, 1, 1, 1.0)
@@ -97,22 +129,8 @@ class Airplane():
         # self.zRot += self.zRotV
 
     def draw(self):
+
         glPushMatrix()
-
-        # OBJETIVO
-        # ALTERAR A POSICAO SOMANDO A POSICAO  + O VETOR FOWARD * VELOCIDADE * TEMPO
-        # transform.position += transform.forward * spéed * deltaTime
-
-        glTranslatef(self.x, self.y, self.z)
-
-        glRotatef(self.xRot, 1, 0, 0)
-        glRotatef(self.yRot, 0, 1, 0)
-        glRotatef(self.zRot, 0, 0, 1)
-
-        self.defineMaterial()
-        self.model.draw()
-        glPopMatrix()
-
         if self.debug:
             print('x', self.x)
             print('y', self.y)
@@ -123,3 +141,26 @@ class Airplane():
             print('forwardX', self.forwardX)
             print('forwardY', self.forwardY)
             print('forwardZ', self.forwardZ)
+            glTranslatef(0, 0, 0)
+            glLineWidth(3.0)
+            Materials.BlackMaterial()
+            glBegin(GL_LINES)
+            glVertex3f(0, 0, 0)
+            glVertex3f(self.forwardX, self.forwardY, self.forwardZ)
+            glEnd()
+            glutSolidSphere(.2, 30, 30)
+
+        # OBJETIVO
+        # ALTERAR A POSICAO SOMANDO A POSICAO  + O VETOR FOWARD * VELOCIDADE * TEMPO
+        # transform.position += transform.forward * speed * deltaTime
+        glTranslatef(self.x, self.y, self.z)
+
+        # glTranslatef(self.modelOffset, 0, 0)
+        glRotatef(self.xRot, 1, 0, 0)
+        glRotatef(self.yRot, 0, 1, 0)
+        glRotatef(self.zRot, 0, 0, 1)
+
+        self.defineMaterial()
+        self.model.draw()
+
+        glPopMatrix()

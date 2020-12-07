@@ -47,17 +47,17 @@ class PlyReader():
             self.gl_list = glGenLists(1)
             glNewList(self.gl_list, GL_COMPILE)
             glFrontFace(GL_CW)
-
-            for face in self.faces:
-                glBegin(GL_POLYGON)
-                normal = Utils.calculaNormalFace(face, self.vertex)
-                for vertex in face:
-                    # print(self.vertex[vertex])
-                    # glColor3fv(self.ver)
-                    glNormal3fv(normal)
-                    glVertex3fv(self.vertex[vertex][0:3])
-                glEnd()
+            self.render()
             glEndList()
+
+    def render(self):
+        for face in self.faces:
+            glBegin(GL_POLYGON)
+            normal = Utils.calculaNormalFace(face, self.vertex)
+            for vertex in face:
+                glNormal3fv(normal)
+                glVertex3fv(self.vertex[vertex][0:3])
+            glEnd()
 
     def draw(self):
         glPushMatrix()
