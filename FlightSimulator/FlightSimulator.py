@@ -137,7 +137,7 @@ class FlightSimulator():
         value = i + self.delay
 
         self.airplane.timer(self.delay, value)
-        self.terrain.timer(self.delay, value)
+        # self.terrain.timer(self.delay, value)
 
         glutTimerFunc(self.delay, self.timer, value)
 
@@ -184,7 +184,7 @@ class FlightSimulator():
             self.debug != self.debug
         if key == b'r':
             del self.airplane
-            del self.terrain
+            # del self.terrain
             self.loadObjects()
         if key == b'i':
             self.rotateCameraHorizontal(self.cameraRotSpeed)

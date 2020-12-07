@@ -122,18 +122,18 @@ class Terrain():
         glEndList()
 
     def timer(self, delay, value):
-        if value % (delay) == 0:
-            self.zoffSeed += 0.001
-            self.xoffSeed += 0.001
-            self.generateHeight()
-            self.createMesh()
+        # if value % (delay) == 0:
+        #     self.zoffSeed += 0.01
+        #     self.xoffSeed += 0.01
+        #     self.generateHeight()
+        #     self.createMesh()
         pass
 
     def draw(self):
         glPushMatrix()
 
         glTranslatef(self.posX, self.posY, self.posZ)
-        glScalef(100, 20, 100)
+        glScalef(300, 150, 300)
         glCallList(self.glLists[-1])
 
         glPopMatrix()

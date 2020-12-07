@@ -70,6 +70,56 @@ def project_onto_plane(x, n):
     return [x[i] - p[i] for i in range(len(x))]
 
 
+def rotateAroundX(vector, teta):
+    rotMat = [
+        [1, 0, 0],
+        [0, math.cos(teta), -math.sin(teta)],
+        [0, math.sin(teta), math.cos(teta)]
+    ]
+    a = [0, 0, 0]
+    a[0] = rotMat[0][0]*vector[0] + rotMat[0][1] * \
+        vector[1] + rotMat[0][2]*vector[2]
+    a[1] = rotMat[1][0]*vector[0] + rotMat[1][1] * \
+        vector[1] + rotMat[1][2]*vector[2]
+    a[2] = rotMat[2][0]*vector[0] + rotMat[2][1] * \
+        vector[1] + rotMat[2][2]*vector[2]
+    return a
+
+
+def rotateAroundY(vector, teta):
+    rotMat = [
+        [math.cos(teta), 0, math.sin(teta)],
+        [0, 1, 0],
+        [-math.sin(teta), 0, math.cos(teta)]
+    ]
+    a = [0, 0, 0]
+
+    a[0] = rotMat[0][0]*vector[0] + rotMat[0][1] * \
+        vector[1] + rotMat[0][2]*vector[2]
+    a[1] = rotMat[1][0]*vector[0] + rotMat[1][1] * \
+        vector[1] + rotMat[1][2]*vector[2]
+    a[2] = rotMat[2][0]*vector[0] + rotMat[2][1] * \
+        vector[1] + rotMat[2][2]*vector[2]
+    return a
+
+
+def rotateAroundZ(vector, teta):
+    rotMat = [
+        [math.cos(teta), -math.sin(teta), 0],
+        [math.sin(teta), math.cos(teta), 0],
+        [0, 0, 1]
+    ]
+
+    a = [0, 0, 0]
+    a[0] = rotMat[0][0]*vector[0] + rotMat[0][1] * \
+        vector[1] + rotMat[0][2]*vector[2]
+    a[1] = rotMat[1][0]*vector[0] + rotMat[1][1] * \
+        vector[1] + rotMat[1][2]*vector[2]
+    a[2] = rotMat[2][0]*vector[0] + rotMat[2][1] * \
+        vector[1] + rotMat[2][2]*vector[2]
+    return a
+
+
 if __name__ == '__main__':
     print(math.sin(radToDegrees(90)))
     print(math.sin(math.pi/2))

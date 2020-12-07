@@ -10,7 +10,8 @@ import Materials
 
 class Airplane():
     def __init__(self):
-        self.model = PlyReader("models/airplane/airplane.ply", frontFace=GL_CW)
+        self.model = PlyReader(
+            "models/airplane/airplane2.ply", frontFace=GL_CW)
 
         self.debug = True
 
@@ -19,6 +20,9 @@ class Airplane():
         self.forwardX = -1
         self.forwardY = 0
         self.forwardZ = 0
+
+        self.up = [0, 1, 0]
+        self.right = [0, 0, -1]
 
         self.x = 0
         self.y = 0
@@ -49,42 +53,22 @@ class Airplane():
         # SETA ESQUERDA
         if key == 100:
             self.xRot += self.xRotV
-            degree = Utils.radToDegrees(-self.xRotV)
-            self.forwardZ = self.forwardZ * \
-                math.cos(degree) - self.forwardY * math.sin(degree)
-
-            self.forwardY = self.forwardZ * \
-                math.sin(degree) + self.forwardY * math.cos(degree)
+            self.rollPlane(+self.xRotV)
 
         # SETA DIREITA
         elif key == 102:
             self.xRot -= self.xRotV
-            degree = Utils.radToDegrees(+self.xRotV)
-            self.forwardZ = self.forwardZ * \
-                math.cos(degree) - self.forwardY * math.sin(degree)
-
-            self.forwardY = self.forwardZ * \
-                math.sin(degree) + self.forwardY * math.cos(degree)
+            self.rollPlane(-self.xRotV)
 
         # SETA CIMA
         elif key == 101:
             self.zRot += self.zRotV
-            degree = Utils.radToDegrees(self.zRotV)
-            self.forwardX = self.forwardX * \
-                math.cos(degree) - self.forwardY * math.sin(degree)
-
-            self.forwardY = self.forwardX * \
-                math.sin(degree) + self.forwardY * math.cos(degree)
+            self.pitchPlane(+self.zRotV)
 
         # SETA BAIXO
         elif key == 103:
             self.zRot -= self.zRotV
-            degree = Utils.radToDegrees(-self.zRotV)
-            self.forwardX = self.forwardX * \
-                math.cos(degree) - self.forwardY * math.sin(degree)
-
-            self.forwardY = self.forwardX * \
-                math.sin(degree) + self.forwardY * math.cos(degree)
+            self.pitchPlane(-self.zRotV)
 
         # PARA FRENTE
         elif key == b'f':
@@ -106,6 +90,22 @@ class Airplane():
 
     def timer(self, delay, value):
         pass
+
+    def rollPlane(self, rad):
+        degree = Utils.radToDegrees(rad)
+        self.forwardX, self.forwardY, self.forwardZ = Utils.rotateAroundX(
+            [self.forwardX, self.forwardY, self.forwardZ], degree)
+
+        self.up = Utils.rotateAroundX(self.up, degree)
+        self.right = Utils.rotateAroundX(self.right, degree)
+
+    def pitchPlane(self, rad):
+        degree = Utils.radToDegrees(rad)
+        self.forwardX, self.forwardY, self.forwardZ = Utils.rotateAroundZ(
+            [self.forwardX, self.forwardY, self.forwardZ], degree)
+
+        self.up = Utils.rotateAroundZ(self.up, degree)
+        self.right = Utils.rotateAroundX(self.right, degree)
 
     def defineMaterial(self):
         mat_ambient = (1, 1, 1, 1.0)
@@ -141,12 +141,22 @@ class Airplane():
             print('forwardX', self.forwardX)
             print('forwardY', self.forwardY)
             print('forwardZ', self.forwardZ)
+            print('Up', self.up)
+            print('Right', self.right)
             glTranslatef(0, 0, 0)
             glLineWidth(3.0)
             Materials.BlackMaterial()
             glBegin(GL_LINES)
             glVertex3f(0, 0, 0)
-            glVertex3f(self.forwardX, self.forwardY, self.forwardZ)
+            glVertex3f(self.forwardX*10, self.forwardY*10, self.forwardZ*10)
+            glEnd()
+            glBegin(GL_LINES)
+            glVertex3f(0, 0, 0)
+            glVertex3f(self.up[0]*10, self.up[1]*10, self.up[2]*10)
+            glEnd()
+            glBegin(GL_LINES)
+            glVertex3f(0, 0, 0)
+            glVertex3f(self.right[0]*10, self.right[1]*10, self.right[2]*10)
             glEnd()
             glutSolidSphere(.2, 30, 30)
 
