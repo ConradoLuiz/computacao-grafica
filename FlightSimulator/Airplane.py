@@ -40,6 +40,13 @@ class Airplane():
         self.yRot = 0
         self.zRot = 0
 
+        # self.rotationMatrix = [
+        #     [0, 0, 0],
+        #     [0, 0, 0],
+        #     [0, 0, 0]
+        # ]
+        self.rotationMatrix = False
+
         self.xRotV = 1
         self.yRotV = 1
         self.zRotV = 1
@@ -49,26 +56,29 @@ class Airplane():
         if key == b'p':
             self.debug = not self.debug
             print("DEBUG ATIVO") if self.debug else print("DEBUG DESATIVADO")
+            # print(Utils.norm(self.up))
+            # print(Utils.norm(self.right))
+            # print(Utils.norm([self.forwardX, self.forwardY, self.forwardZ]))
 
         # SETA ESQUERDA
         if key == 100:
-            self.xRot += self.xRotV
-            self.rollPlane(+self.xRotV)
+            # self.xRot += self.xRotV
+            self.rollPlane(-self.xRotV)
 
         # SETA DIREITA
         elif key == 102:
-            self.xRot -= self.xRotV
-            self.rollPlane(-self.xRotV)
+            # self.xRot -= self.xRotV
+            self.rollPlane(+self.xRotV)
 
         # SETA CIMA
         elif key == 101:
-            self.zRot += self.zRotV
-            self.pitchPlane(+self.zRotV)
+            # self.zRot += self.zRotV
+            self.pitchPlane(-self.zRotV)
 
         # SETA BAIXO
         elif key == 103:
-            self.zRot -= self.zRotV
-            self.pitchPlane(-self.zRotV)
+            # self.zRot -= self.zRotV
+            self.pitchPlane(+self.zRotV)
 
         # PARA FRENTE
         elif key == b'f':
@@ -93,19 +103,43 @@ class Airplane():
 
     def rollPlane(self, rad):
         degree = Utils.radToDegrees(rad)
-        self.forwardX, self.forwardY, self.forwardZ = Utils.rotateAroundX(
+        # self.forwardX, self.forwardY, self.forwardZ = Utils.rotateAroundX(
+        #     [self.forwardX, self.forwardY, self.forwardZ], degree)
+        # print(rad)
+        # print(degree)
+        oldRot = [self.xRot, self.yRot, self.zRot]
+
+        self.rotationMatrix = Utils.rotation_matrix(
             [self.forwardX, self.forwardY, self.forwardZ], degree)
 
-        self.up = Utils.rotateAroundX(self.up, degree)
-        self.right = Utils.rotateAroundX(self.right, degree)
+        self.xRot, self.yRot, self.zRot = Utils.eulerAnglesFromMatrix(
+            self.rotationMatrix)
+
+        self.xRot, self.yRot, self.zRot = Utils.degreeToRad(
+            self.xRot), Utils.degreeToRad(self.yRot), Utils.degreeToRad(self.zRot)
+
+        self.up = Utils.rotate(self.rotationMatrix, self.up)
+        self.right = Utils.rotate(self.rotationMatrix, self.right)
+
+        return
 
     def pitchPlane(self, rad):
         degree = Utils.radToDegrees(rad)
-        self.forwardX, self.forwardY, self.forwardZ = Utils.rotateAroundZ(
-            [self.forwardX, self.forwardY, self.forwardZ], degree)
+        oldRot = [self.xRot, self.yRot, self.zRot]
 
-        self.up = Utils.rotateAroundZ(self.up, degree)
-        self.right = Utils.rotateAroundX(self.right, degree)
+        self.rotationMatrix = Utils.rotation_matrix(self.right, degree)
+        self.xRot, self.yRot, self.zRot = Utils.eulerAnglesFromMatrix(
+            self.rotationMatrix)
+
+        self.xRot, self.yRot, self.zRot = Utils.degreeToRad(
+            self.xRot), Utils.degreeToRad(self.yRot), Utils.degreeToRad(self.zRot)
+
+        self.forwardX, self.forwardY, self.forwardZ = Utils.rotate(self.rotationMatrix,
+                                                                   [self.forwardX, self.forwardY, self.forwardZ])
+
+        self.up = Utils.rotate(self.rotationMatrix, self.up)
+        # self.right = Utils.rotateAroundX(self.right, degree)
+        return
 
     def defineMaterial(self):
         mat_ambient = (1, 1, 1, 1.0)
@@ -169,6 +203,7 @@ class Airplane():
         glRotatef(self.xRot, 1, 0, 0)
         glRotatef(self.yRot, 0, 1, 0)
         glRotatef(self.zRot, 0, 0, 1)
+        # glMultMatrixf(self.rotationMatrix)
 
         self.defineMaterial()
         self.model.draw()
