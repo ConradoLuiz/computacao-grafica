@@ -13,7 +13,7 @@ class Airplane():
         self.model = PlyReader(
             "models/airplane/airplane2.ply", frontFace=GL_CW)
 
-        self.debug = True
+        self.debug = False
 
         self.modelOffset = -7
 
@@ -40,12 +40,13 @@ class Airplane():
         self.yRot = 0
         self.zRot = 0
 
-        # self.rotationMatrix = [
-        #     [0, 0, 0],
-        #     [0, 0, 0],
-        #     [0, 0, 0]
-        # ]
-        self.rotationMatrix = False
+        self.angle = 0
+
+        self.rotationMatrix = [
+            [1, 0, 0],
+            [0, 1, 0],
+            [0, 0, 1]
+        ]
 
         self.xRotV = 1
         self.yRotV = 1
@@ -60,97 +61,162 @@ class Airplane():
             # print(Utils.norm(self.right))
             # print(Utils.norm([self.forwardX, self.forwardY, self.forwardZ]))
 
+        # # SETA ESQUERDA
+        # if key == 100:
+        #     self.xRot += self.xRotV
+
+        # # SETA DIREITA
+        # elif key == 102:
+        #     self.xRot -= self.xRotV
+
+        # # SETA CIMA
+        # elif key == 101:
+        #     self.zRot += self.zRotV
+
+        # # SETA BAIXO
+        # elif key == 103:
+        #     self.zRot -= self.zRotV
+
+        # # PARA FRENTE
+        # elif key == b'f':
+        #     self.x -= self.xV
+
+        # # PARA TRAS
+        # elif key == b'g':
+        #     self.x += self.xV
+
+        # # ROTAÇÃO Y ESQUERDA
+        # elif key == b'j':
+        #     self.yawPlane(-1)
+
+        # # ROTAÇÃO Y DIREITA
+        # elif key == b'k':
+        #     self.yawPlane(1)
+
+        # -------------------------------------------------------------------------------------
+        # -------------------------------------------------------------------------------------
+        # -------------------------------------------------------------------------------------
+        # -------------------------------------------------------------------------------------
+        #
+
         # SETA ESQUERDA
         if key == 100:
-            # self.xRot += self.xRotV
-            self.rollPlane(-self.xRotV)
+            self.rollPlane(self.xRotV)
 
         # SETA DIREITA
         elif key == 102:
-            # self.xRot -= self.xRotV
-            self.rollPlane(+self.xRotV)
+            self.rollPlane(-self.xRotV)
 
         # SETA CIMA
         elif key == 101:
-            # self.zRot += self.zRotV
             self.pitchPlane(-self.zRotV)
 
         # SETA BAIXO
         elif key == 103:
-            # self.zRot -= self.zRotV
             self.pitchPlane(+self.zRotV)
 
-        # PARA FRENTE
-        elif key == b'f':
-            self.x += self.forwardX * (self.xV)
-            self.y += self.forwardY * (self.xV)
-            self.z += self.forwardZ * (self.xV)
-            # self.x += self.forwardX * (-1)
-            # self.y += self.forwardY * (0)
-            # self.z += self.forwardZ * (0)
-            # self.x -= self.xV
+        # # ROTAÇÃO Y ESQUERDA
+        # elif key == b'j':
+        #     self.yawPlane(-1)
 
-        # PARA TRAS
-        elif key == b'g':
-            # self.x += self.forwardX * (+self.xV)
-            self.x -= self.forwardX * (self.xV)
-            self.y -= self.forwardY * (self.xV)
-            self.z -= self.forwardZ * (self.xV)
-            # self.x += self.xV
+        # # ROTAÇÃO Y DIREITA
+        # elif key == b'k':
+        #     self.yawPlane(1)
+
+        # # PARA FRENTE
+        # elif key == b'f':
+        #     self.x += self.forwardX * (self.xV)
+        #     self.y += self.forwardY * (self.xV)
+        #     self.z += self.forwardZ * (self.xV)
+
+        # # PARA TRAS
+        # elif key == b'g':
+        #     # # self.x += self.forwardX * (+self.xV)
+        #     self.x -= self.forwardX * (self.xV)
+        #     self.y -= self.forwardY * (self.xV)
+        #     self.z -= self.forwardZ * (self.xV)
 
     def timer(self, delay, value):
         pass
 
     def rollPlane(self, rad):
-        degree = Utils.radToDegrees(rad)
         # self.forwardX, self.forwardY, self.forwardZ = Utils.rotateAroundX(
         #     [self.forwardX, self.forwardY, self.forwardZ], degree)
         # print(rad)
         # print(degree)
+
+        degree = Utils.radToDegrees(rad)
+
+        self.angle += degree
+
         oldRot = [self.xRot, self.yRot, self.zRot]
 
         self.rotationMatrix = Utils.rotation_matrix(
-            [self.forwardX, self.forwardY, self.forwardZ], degree)
-
-        self.xRot, self.yRot, self.zRot = Utils.eulerAnglesFromMatrix(
-            self.rotationMatrix)
-
-        self.xRot, self.yRot, self.zRot = Utils.degreeToRad(
-            self.xRot), Utils.degreeToRad(self.yRot), Utils.degreeToRad(self.zRot)
+            [self.forwardX, self.forwardY, self.forwardZ], -degree)
 
         self.up = Utils.rotate(self.rotationMatrix, self.up)
         self.right = Utils.rotate(self.rotationMatrix, self.right)
 
+        self.rotationMatrix = Utils.rotation_matrix(
+            [self.forwardX, self.forwardY, self.forwardZ], self.angle)
+
+        # print(rotMat)
+        # print(self.rotationMatrix)
+        # self.rotationMatrix = Utils.multiplyMatrix(self.rotationMatrix, rotMat)
+
+        # self.xRot, self.yRot, self.zRot = Utils.eulerAnglesFromMatrix(
+        #     self.rotationMatrix)
+
+        # self.xRot, self.yRot, self.zRot = Utils.degreeToRad(
+        #     self.xRot), Utils.degreeToRad(self.yRot), Utils.degreeToRad(self.zRot)
+
         return
 
     def pitchPlane(self, rad):
+
+        # -------------------------------------------------------------------------------------------
+        # -------------------------------------------------------------------------------------------
+        # -------------------------------------------------------------------------------------------
+
         degree = Utils.radToDegrees(rad)
+
+        self.angle += degree
+
         oldRot = [self.xRot, self.yRot, self.zRot]
 
-        self.rotationMatrix = Utils.rotation_matrix(self.right, degree)
-        self.xRot, self.yRot, self.zRot = Utils.eulerAnglesFromMatrix(
-            self.rotationMatrix)
-
-        self.xRot, self.yRot, self.zRot = Utils.degreeToRad(
-            self.xRot), Utils.degreeToRad(self.yRot), Utils.degreeToRad(self.zRot)
+        # self.xRot, self.yRot, self.zRot = Utils.eulerAngleFromMatrix(
+        #     self.rotationMatrix)
+        # print(self.rotationMatrix)
+        # self.xRot, self.yRot, self.zRot = Utils.degreeToRad(
+        #     self.xRot), Utils.degreeToRad(self.yRot), Utils.degreeToRad(self.zRot)
+        self.rotationMatrix = Utils.rotation_matrix(self.right, -degree)
 
         self.forwardX, self.forwardY, self.forwardZ = Utils.rotate(self.rotationMatrix,
                                                                    [self.forwardX, self.forwardY, self.forwardZ])
 
         self.up = Utils.rotate(self.rotationMatrix, self.up)
-        # self.right = Utils.rotateAroundX(self.right, degree)
+
+        self.rotationMatrix = Utils.rotation_matrix(self.right, self.angle)
+
+        return
+
+    def yawPlane(self, rad):
+
+        self.angle += rad
+
+        degrees = Utils.radToDegrees(rad)
+
+        self.forwardX = math.cos(degrees)
+        self.forwardY = 0
+        self.forwardZ = math.sin(degrees)
+
+        # self.xRot, self.yRot, self.zRot = Utils.normalize(
+        #     [self.xRot, self.yRot, self.zRot])
+
         return
 
     def defineMaterial(self):
-        mat_ambient = (1, 1, 1, 1.0)
-        mat_diffuse = (196/255, 202/255, 206/255, 1.0)
-        mat_specular = (1.0, 1.0, 1.0, 1.0)
-        mat_shininess = (10,)
-
-        glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient)
-        glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse)
-        glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular)
-        glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess)
+        Materials.AirplaneMaterial()
 
     def updatePos(self):
         pass
@@ -169,9 +235,11 @@ class Airplane():
             print('x', self.x)
             print('y', self.y)
             print('z', self.z)
+            print('angle', self.angle)
             print('xRot', self.xRot)
             print('yRot', self.yRot)
             print('zRot', self.zRot)
+            print('RotationMatrix', self.rotationMatrix)
             print('forwardX', self.forwardX)
             print('forwardY', self.forwardY)
             print('forwardZ', self.forwardZ)
@@ -195,14 +263,22 @@ class Airplane():
             glutSolidSphere(.2, 30, 30)
 
         # OBJETIVO
-        # ALTERAR A POSICAO SOMANDO A POSICAO  + O VETOR FOWARD * VELOCIDADE * TEMPO
-        # transform.position += transform.forward * speed * deltaTime
+        # glTranslatef(-self.x, -self.y, -self.z)
+
         glTranslatef(self.x, self.y, self.z)
 
         # glTranslatef(self.modelOffset, 0, 0)
-        glRotatef(self.xRot, 1, 0, 0)
-        glRotatef(self.yRot, 0, 1, 0)
-        glRotatef(self.zRot, 0, 0, 1)
+        # glRotatef(self.xRot, 1, 0, 0)
+        # glRotatef(self.yRot, 0, 1, 0)
+        # glRotatef(self.zRot, 0, 0, 1)
+        # glRotatef(self.angle, self.xRot, self.yRot, self.zRot)
+
+        glMultMatrixf(Utils.rotationMatrixTo4d(self.rotationMatrix))
+
+        # glTranslatef(-self.x, -self.y, -self.z)
+
+        # glTranslatef(self.x, self.y, self.z)
+
         # glMultMatrixf(self.rotationMatrix)
 
         self.defineMaterial()

@@ -75,6 +75,15 @@ def project_onto_plane(x, n):
     return [x[i] - p[i] for i in range(len(x))]
 
 
+def perpendicular_vector(v):
+    if v[1] == 0 and v[2] == 0:
+        if v[0] == 0:
+            raise ValueError('zero vector')
+        else:
+            return np.cross(v, [1, 0, 0])
+    return np.cross(v, [0, 1, 0])
+
+
 def rotateAroundX(vector, teta):
     rotMat = [
         [1, 0, 0],
@@ -135,17 +144,6 @@ def rotate(rotMat, vector):
         vector[1] + rotMat[2][2]*vector[2]
     return a
 
-# def rodriguesFormula(axis, angulo):
-#     i = np.eye(3)
-#     w = [
-#         [0, -axis[2], axis[1]],
-#         [axis[2], 0, -axis[0]],
-#         [-axis[1], axis[0], 0],
-#     ]
-#     w = np.matrix(w)
-
-#     print(i)
-
 
 def rotation_matrix(axis, theta):
     """
@@ -171,13 +169,59 @@ def eulerAnglesFromMatrix(matrix):
     return [x, y, z]
 
 
+def rotationMatrixTo4d(rotMat):
+    newMat = []
+    newMat.append([0, 0, 0, 0])
+    newMat.append([0, 0, 0, 0])
+    newMat.append([0, 0, 0, 0])
+    newMat.append([0, 0, 0, 1])
+
+    for i, row in enumerate(rotMat):
+        for j, col in enumerate(row):
+            newMat[i][j] = rotMat[i][j]
+
+    return newMat
+
+
+def addMatrix(mat1, mat2):
+    newMat = []
+    for _ in range(len(mat1)):
+        newMat.append([0] * len(mat1[0]))
+
+    for i, row in enumerate(mat1):
+        for j, col in enumerate(row):
+            newMat[i][j] = mat1[i][j] + mat2[i][j]
+
+    return newMat
+
+
+def multiplyMatrix(mat1, mat2):
+    newMat = []
+    for _ in range(len(mat1)):
+        newMat.append([0] * len(mat1[0]))
+
+    for i, row in enumerate(mat1):
+        for j, col in enumerate(row):
+            newMat[i][j] = mat1[i][j] * mat2[i][j]
+
+    return newMat
+
+
 if __name__ == '__main__':
-    print(math.sin(radToDegrees(90)))
-    print(math.sin(math.pi/2))
+    # print(math.sin(radToDegrees(90)))
+    # print(math.sin(math.pi/2))
 
-    rotMat = rotation_matrix((0, 1, 0), -math.pi/2)
-    print(rotMat)
+    # rotMat = rotation_matrix((0, 1, 0), -math.pi/2)
+    # print(rotMat)
 
-    rotatedVector = rotate(rotMat, (1, 0, 0))
+    # rotatedVector = rotate(rotMat, (1, 0, 0))
 
-    print(rotatedVector)
+    # print(rotatedVector)
+    eye3 = [
+        [1, 0, 0],
+        [0, 1, 0],
+        [0, 0, 1],
+    ]
+    rotationMatrixTo4d(eye3)
+
+    print(addMatrix(eye3, eye3))

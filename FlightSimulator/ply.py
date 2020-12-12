@@ -46,7 +46,7 @@ class PlyReader():
 
             self.gl_list = glGenLists(1)
             glNewList(self.gl_list, GL_COMPILE)
-            glFrontFace(GL_CCW)
+            glFrontFace(GL_CW)
             self.render()
             glEndList()
 

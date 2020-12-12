@@ -7,6 +7,74 @@ import Utils
 import png
 import math
 
+vertices = (
+    (1, -1, -1),
+    (1, 1, -1),
+    (-1, 1, -1),
+    (-1, -1, -1),
+    (1, -1, 1),
+    (1, 1, 1),
+    (-1, -1, 1),
+    (-1, 1, 1),
+)
+
+linhas = (
+    (0, 1),
+    (0, 3),
+    (0, 4),
+    (2, 1),
+    (2, 3),
+    (2, 7),
+    (6, 3),
+    (6, 4),
+    (6, 7),
+    (5, 1),
+    (5, 4),
+    (5, 7),
+)
+
+faces = (
+        (0, 1, 2, 3),
+        (3, 2, 7, 6),
+        (6, 7, 5, 4),
+        (4, 5, 1, 0),
+        (1, 5, 7, 2),
+        (4, 0, 3, 6)
+)
+
+# https://www.opengl.org/wiki/Calculating_a_Surface_Normal
+# Begin Function CalculateSurfaceNormal (Input Triangle) Returns Vector
+#  Set Vector U to (Triangle.p2 minus Triangle.p1)
+#  Set Vector V to (Triangle.p3 minus Triangle.p1)
+#  Set Normal.x to (multiply U.y by V.z) minus (multiply U.z by V.y)
+#  Set Normal.y to (multiply U.z by V.x) minus (multiply U.x by V.z)
+#  Set Normal.z to (multiply U.x by V.y) minus (multiply U.y by V.x)
+#  Returning Normal
+# End Function
+
+
+def calculaNormalFace(face):
+    x = 0
+    y = 1
+    z = 2
+    v0 = vertices[face[0]]
+    v1 = vertices[face[1]]
+    v2 = vertices[face[2]]
+    U = (v2[x]-v0[x], v2[y]-v0[y], v2[z]-v0[z])
+    V = (v1[x]-v0[x], v1[y]-v0[y], v1[z]-v0[z])
+    N = ((U[y]*V[z]-U[z]*V[y]), (U[z]*V[x]-U[x]*V[z]), (U[x]*V[y]-U[y]*V[x]))
+    NLength = math.sqrt(N[x]*N[x]+N[y]*N[y]+N[z]*N[z])
+    return (N[x]/NLength, N[y]/NLength, N[z]/NLength)
+
+
+def Cubo():
+    glBegin(GL_QUADS)
+    for face in faces:
+        glNormal3fv(calculaNormalFace(face))
+        for vertex in face:
+            glVertex3fv(vertices[vertex])
+    glEnd()
+
 
 class FlightSimulator():
 
@@ -28,16 +96,18 @@ class FlightSimulator():
         self.cameraDistance = 25
         self.cameraHeight = 4
 
-        self.cameraX = 20
-        self.cameraY = 20
-        self.cameraZ = 0 + self.cameraDistance
+        self.cameraX = 0 + self.cameraDistance
+        self.cameraY = 4
+        self.cameraZ = 0
 
         self.cameraXRot = 0
         self.cameraZRot = 0
 
         self.cameraRotSpeed = 1.5
 
-        self.debug = True
+        self.debug = False
+
+        self.flyingSpeed = 1
 
         glutInit(sys.argv)
         glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA |
@@ -56,37 +126,38 @@ class FlightSimulator():
         glutMotionFunc(self.mouseDrag)
         glutKeyboardFunc(self.keys)
 
+        self.a = 0
+
     def initGL(self):
         # self.loadTextures()
         # glEnable(GL_TEXTURE_2D)
-        glEnable(GL_MULTISAMPLE)
-        glClearDepth(1.0)
-        glEnable(GL_DEPTH_TEST)
-        glMatrixMode(GL_PROJECTION)
-        gluPerspective(45, self.width/self.height, 0.1, 100000.0)
-        glShadeModel(GL_SMOOTH)
 
-        glClearColor(69/255, 160/255, 200/255, 1.0)
+        # glShadeModel(GL_FLAT)
 
         mat_ambient = (0.6, 0.0, 0.0, 1.0)
         mat_diffuse = (0, 0.0, 1.0, 1.0)
         mat_specular = (1.0, 1.0, 1.0, 1.0)
         mat_shininess = (10,)
 
+        glClearColor(69/255, 160/255, 200/255, 1.0)
+        glShadeModel(GL_SMOOTH)
+
         glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient)
         glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse)
         glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular)
         glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess)
 
-        light_position = (0, 10, 0, 0.0)
-        glLightfv(GL_LIGHT0, GL_POSITION, light_position)
+        glEnable(GL_LIGHTING)
+        self.light_position = (0, 10, 0, .4)
         glEnable(GL_LIGHT0)
 
-        light_position = (0, -5, 0, 0.0)
-        glLightfv(GL_LIGHT1, GL_POSITION, light_position)
-        glEnable(GL_LIGHT1)
+        glClearDepth(1.0)
+        glMatrixMode(GL_PROJECTION)
+        gluPerspective(45, self.width/self.height, 0.1, 100000.0)
+        # glMatrixMode(GL_MODELVIEW)
 
-        glEnable(GL_LIGHTING)
+        glEnable(GL_DEPTH_TEST)
+        glEnable(GL_MULTISAMPLE)
 
         self.loadObjects()
 
@@ -137,7 +208,7 @@ class FlightSimulator():
         value = i + self.delay
 
         self.airplane.timer(self.delay, value)
-        # self.terrain.timer(self.delay, value)
+        self.terrain.timer(self.delay, value)
 
         glutTimerFunc(self.delay, self.timer, value)
 
@@ -162,34 +233,41 @@ class FlightSimulator():
         # if btn == 2 and state == 0:
         #     pause_rotation = not pause_rotation
 
+        print(mouseX, mouseY)
+
     def mouseDrag(self, x, y):
         if self.isDragging:
-            # glTranslatef(5 * (x-self.previousMouseX)/self.width,
-            #              5 * -(y-self.previousMouseY)/self.height, 0)
-            # self.cameraXRot = (x-self.previousMouseX/self.width)
-            # self.cameraZRot = (y-self.previousMouseY/self.height)
 
-            self.rotateCameraHorizontal((x-self.previousMouseX))
-            self.rotateCameraVertical((y-self.previousMouseY))
+            self.terrain.mouse(x, y, self.previousMouseX, self.previousMouseY)
+
+            # self.rotateCameraHorizontal((x-self.previousMouseX))
+            # self.rotateCameraVertical((y-self.previousMouseY))
             self.previousMouseX = x
             self.previousMouseY = y
 
     def specialKeys(self, key, x, y):
-        self.airplane.command(key)
+        # self.airplane.command(key)
+        self.terrain.command(key)
+
         glutPostRedisplay()
 
     def keys(self, key, x, y):
-        self.airplane.command(key)
+        # self.airplane.command(key)
+        self.terrain.command(key)
+
         if key == b'p':
             self.debug != self.debug
         if key == b'r':
             del self.airplane
-            # del self.terrain
+            del self.terrain
             self.loadObjects()
+
         if key == b'i':
             self.rotateCameraHorizontal(self.cameraRotSpeed)
             # self.cameraXRot += 0.1
             # self.cameraZRot += 0.1
+        if key == b't':
+            self.a += 1
 
         if key == b'o':
             self.rotateCameraHorizontal(-self.cameraRotSpeed)
@@ -224,20 +302,25 @@ class FlightSimulator():
             math.cos(Utils.radToDegrees(rad))
 
     def rotateCameraVertical(self, rad):
+        normalizedPosition = Utils.normalize(
+            (self.cameraX, self.cameraY, self.cameraZ))
+
+        if normalizedPosition[1] >= 0.98 and rad > 0:
+            return
+        if normalizedPosition[1] <= -0.98 and rad < 0:
+            return
+
         proj = Utils.project_onto_plane(
-            (self.cameraX, self.cameraY, self.cameraZ), (0, 1, 0))
-        # print(proj)
-        self.cameraX = proj[0] * \
-            math.cos(Utils.radToDegrees(rad)) - self.cameraY * \
-            math.sin(Utils.radToDegrees(rad))
+            normalizedPosition, (0, 1, 0))
 
-        self.cameraY = proj[0] * \
-            math.sin(Utils.radToDegrees(rad)) + self.cameraY * \
-            math.cos(Utils.radToDegrees(rad))
+        proj = Utils.normalize(proj)
 
-        # self.cameraZ = proj[1] * \
-        #     math.cos(Utils.radToDegrees(rad)) - self.cameraY * \
-        #     math.sin(Utils.radToDegrees(rad))
+        perpendicular = Utils.perpendicular_vector(proj)
+
+        rotMat = Utils.rotation_matrix(perpendicular, Utils.radToDegrees(rad))
+
+        self.cameraX, self.cameraY, self.cameraZ = Utils.rotate(
+            rotMat, [self.cameraX, self.cameraY, self.cameraZ])
 
     def zoomCamera(self, delta):
         # self.zoom += delta
@@ -252,13 +335,20 @@ class FlightSimulator():
         # print(self.cameraXRot)
         # print(self.cameraZRot)
         glPushMatrix()
+        glLightfv(GL_LIGHT0, GL_POSITION, self.light_position)
 
         gluLookAt(self.cameraX, self.cameraY,
                   self.cameraZ, self.camLookX, self.camLookY, self.camLookZ, 0, 1, 0)
 
         self.airplane.updatePos()
+
         self.airplane.draw()
         self.terrain.draw()
+        # glPushMatrix()
+        # glTranslatef(0, 0, 6)
+        # glRotatef(self.a, 1, 0, 0)
+        # Cubo()
+        # glPopMatrix()
 
         # ESFERA NO CENTRO DO MUNDO
         # glutWireSphere(2, 30, 30)
@@ -278,21 +368,21 @@ class FlightSimulator():
             glLineWidth(3.0)
             glBegin(GL_LINES)
             glVertex3f(0, 0, 0)
-            glVertex3f(4, 0, 0)
+            glVertex3f(10, 0, 0)
             glEnd()
             # Y
             Materials.GeneralMaterial((0, 1, 0, 1))
             glLineWidth(3.0)
             glBegin(GL_LINES)
             glVertex3f(0, 0, 0)
-            glVertex3f(0, 4, 0)
+            glVertex3f(0, 10, 0)
             glEnd()
             # Z
             Materials.GeneralMaterial((0, 0, 1, 1))
             glLineWidth(3.0)
             glBegin(GL_LINES)
             glVertex3f(0, 0, 0)
-            glVertex3f(0, 0, 4)
+            glVertex3f(0, 0, 10)
             glEnd()
         glPopMatrix()
 

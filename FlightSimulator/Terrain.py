@@ -14,6 +14,8 @@ class Terrain():
         self.height = height
         self.scale = scale
 
+        self.rotation = [0, 0, 0]
+
         self.xMin = -1
         self.xMax = 1
 
@@ -38,12 +40,34 @@ class Terrain():
         # self.generateList()
 
         self.posX = 0.
-        self.posY = -30.
+        self.posY = -150.
         self.posZ = 0.
 
     def defineMaterial(self):
         # Materials.OceanMaterial()
         Materials.MountainMaterial()
+        # Materials.AirplaneMaterial()
+
+    def command(self, key):
+        # SETA ESQUERDA
+        if key == 100:
+            self.rotation[0] -= .7
+
+        # SETA DIREITA
+        elif key == 102:
+            self.rotation[0] += .7
+
+        # SETA CIMA
+        elif key == 101:
+            self.rotation[2] -= .7
+
+        # SETA BAIXO
+        elif key == 103:
+            self.rotation[2] += .7
+
+    def mouse(self, x, y, pX, pY):
+        self.rotation[0] += x - pX
+        self.rotation[2] += y - pY
 
     def generateHeight(self):
         z = self.zMin
@@ -69,7 +93,6 @@ class Terrain():
 
         glNewList(self.glLists[-1], GL_COMPILE)
         glFrontFace(GL_CCW)
-        self.defineMaterial()
 
         z = self.zMin
         i = 0
@@ -90,7 +113,7 @@ class Terrain():
 
                 normal = Utils.calcNormalTriangulo(
                     vertex1, vertex3, vertex2)
-
+                # print(normal)
                 glNormal3fv(normal)
                 glVertex3fv(vertex1)
                 glVertex3fv(vertex2)
@@ -122,18 +145,25 @@ class Terrain():
         glEndList()
 
     def timer(self, delay, value):
-        # if value % (delay) == 0:
-        #     self.zoffSeed += 0.01
-        #     self.xoffSeed += 0.01
-        #     self.generateHeight()
-        #     self.createMesh()
+        if value % (delay) == 0:
+            self.zoffSeed -= 0.03
+            # self.xoffSeed += 0.005
+            self.generateHeight()
+            self.createMesh()
         pass
 
     def draw(self):
         glPushMatrix()
 
+        glRotatef(self.rotation[0], 1, 0, 0)
+        glRotatef(self.rotation[1], 0, 1, 0)
+        glRotatef(self.rotation[2], 0, 0, 1)
+
         glTranslatef(self.posX, self.posY, self.posZ)
-        glScalef(300, 150, 300)
+
+        glScalef(1000, 300, 1000)
+
+        self.defineMaterial()
         glCallList(self.glLists[-1])
 
         glPopMatrix()
