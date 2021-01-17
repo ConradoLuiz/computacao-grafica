@@ -87,9 +87,9 @@ void App::updatePerspectiveAndLookAtMatrix()
 	this->vp = projection * view;
 }
 
-void App::perspective(float perspectiveFieldOfView, float perspectiveNear, float perspectiveFar)
+void App::perspective(float perspectiveFOV, float perspectiveNear, float perspectiveFar)
 {
-	this->perspectiveFOV = perspectiveFieldOfView;
+	this->perspectiveFOV = perspectiveFOV;
 	this->perspectiveNear = perspectiveNear;
 	this->perspectiveFar = perspectiveFar;
 	this->updatePerspectiveAndLookAtMatrix();
@@ -164,7 +164,7 @@ bool App::run(DrawCallback callback)
 
 			else if (event.type == SDL_MOUSEMOTION)
 			{
-				SDL_Log("Mouse Position %dx%d", event.motion.x, event.motion.y);
+				//SDL_Log("Mouse Position %dx%d", event.motion.x, event.motion.y);
 			}
 
 			else if (event.type == SDL_MOUSEBUTTONDOWN)
