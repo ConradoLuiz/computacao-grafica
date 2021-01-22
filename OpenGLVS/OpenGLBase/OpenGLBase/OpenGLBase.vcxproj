@@ -76,7 +76,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)OpenGLBase\;$(SolutionDir)Dependencies\glm;$(SolutionDir)Dependencies\SDL2\include;$(SolutionDir)Dependencies\GLEW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)OpenGLBase\Headers;$(SolutionDir)Dependencies\glm;$(SolutionDir)Dependencies\SDL2\include;$(SolutionDir)Dependencies\GLEW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -104,7 +104,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)OpenGLBase\;$(SolutionDir)Dependencies\glm;$(SolutionDir)Dependencies\SDL2\include;$(SolutionDir)Dependencies\GLEW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)OpenGLBase\Headers;$(SolutionDir)Dependencies\glm;$(SolutionDir)Dependencies\SDL2\include;$(SolutionDir)Dependencies\GLEW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -133,13 +133,19 @@
   <ItemGroup>
     <ClCompile Include="App.cpp" />
     <ClCompile Include="Cube.cpp" />
+    <ClCompile Include="Transform.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="App.h" />
-    <ClInclude Include="Cube.h" />
-    <ClInclude Include="Shader.h" />
+    <ClInclude Include="Headers\Transform.h" />
+    <ClInclude Include="Headers\App.h" />
+    <ClInclude Include="Headers\Cube.h" />
+    <ClInclude Include="Headers\Shader.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\vertexAndColorShader.fs.glsl" />
+    <None Include="shaders\vertexAndColorShader.vs.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
