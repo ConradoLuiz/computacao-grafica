@@ -5,6 +5,10 @@ Transform::Transform(glm::vec3 position, glm::vec3 rotation) {
 	this->rotation = glm::quat(glm::vec3(0.0f)) * glm::quat(glm::radians(rotation));
 }
 
+Transform::~Transform() {
+
+}
+
 glm::vec3 Transform::up() {
 	return glm::normalize( this->rotation * glm::vec3(0.0f, 1.0f, 0.0f));
 }

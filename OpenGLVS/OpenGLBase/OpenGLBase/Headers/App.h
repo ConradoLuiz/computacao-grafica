@@ -31,7 +31,7 @@ class App
 		virtual void updatePerspectiveAndLookAtMatrix();
 		void perspective(float perspectiveFOV, float perspectiveNear, float perspectiveFar);
 		void lookAt(glm::vec3 lookAtEye, glm::vec3 lookAtCenter, glm::vec3 lookAtUp);
-		void rotateCamera(int mouseX, int mouseY);
+		void rotateCamera(glm::vec2 mouse);
 		void updateCamera();
 
 		SDL_Window *window;
@@ -43,9 +43,6 @@ class App
 		glm::vec3 lookAtEye;
 		glm::vec3 lookAtCenter;
 		glm::vec3 lookAtUp;
-
-		int pMouseX = -1;
-		int pMouseY = -1;
 
 		float perspectiveFOV;
 		float perspectiveAspect;

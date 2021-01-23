@@ -12,6 +12,7 @@ enum Space {
 class Transform {
 public: 
 	Transform(glm::vec3 position, glm::vec3 rotation = glm::vec3(0.0f));
+	~Transform();
 	glm::vec3 position;
 	glm::quat rotation;
 
