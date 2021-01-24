@@ -50,11 +50,8 @@ App::App(const char* title, int width, int height, bool oldOpenGL){
 	SDL_GL_SetSwapInterval(1);
 
 	this->perspectiveAspect = (1.0f*width) / height;
-	this->cameraTransform = new Transform(glm::vec3(20.0f, 10.0f, 40.0f), glm::vec3(-20.0f, 0.0f, 0.0f));
-	
-	this->lookAt(this->cameraTransform->position, this->cameraTransform->position + this->cameraTransform->forward() * -5.0f, this->cameraTransform->up());
-
-	this->perspective(glm::radians(45.0f), 0.1f, 100.0f);
+	this->camera = new Camera(this->perspectiveAspect, 45.0f, 0.01f, 1000.0f, PERSPECTIVE);
+	this->camera->setPosition(glm::vec3(20.0f, 10.0f, 40.0f), glm::vec3(-20.0f, 0.0f, 0.0f));
 
 	glEnable(GL_DEPTH_TEST);
 	this->canRun = true;
@@ -141,7 +138,7 @@ bool App::run(DrawCallback callback, KeyboardCallBack keyboardCallBack)
 				glClearBufferfv(GL_COLOR, 0, &this->bgcolor[0]);
 				glClearBufferfv(GL_DEPTH, 0, depth);
 				
-				callback(this->projectionMatrix, this->viewMatrix);
+				callback(this->camera->getProjectionMatrix(), this->camera->getViewMatrix());
 				SDL_GL_SwapWindow(this->window);
 			}
 
@@ -153,49 +150,42 @@ bool App::run(DrawCallback callback, KeyboardCallBack keyboardCallBack)
 					int height = event.window.data2;
 					glViewport(0, 0, (GLsizei)width, (GLsizei)height);
 					this->perspectiveAspect = ((1.0f)*width) / height;
-					this->updatePerspectiveAndLookAtMatrix();
+					//this->updatePerspectiveAndLookAtMatrix();
+					this->camera->updateProjection(this->perspectiveAspect, 45.0f, 0.01f, 1000.0f, PERSPECTIVE);
 				}
 			}
 
 			else if (event.type == SDL_KEYDOWN)
 			{	
 				keyboardCallBack(event);
-				if (event.key.keysym.sym == SDLK_UP)
-				{
-				}
-				else if (event.key.keysym.sym == SDLK_DOWN)
-				{
-				}
-				else if (event.key.keysym.sym == SDLK_LEFT)
-				{
-				}
-				else if (event.key.keysym.sym == SDLK_RIGHT)
-				{
-					
-				}
-
 				switch (event.key.keysym.sym) {
 					case SDLK_w:
-						cameraTransform->position += cameraTransform->forward() * -0.5f;
+						this->camera->moveCamera(this->camera->transform->forward() * -0.5f);
 						break;
 					case SDLK_s:
-						cameraTransform->position += cameraTransform->forward() * 0.5f;
+						this->camera->moveCamera(this->camera->transform->forward() * 0.5f);
 						break;
 					case SDLK_a:
-						cameraTransform->position += cameraTransform->right() * -0.5f;
+						this->camera->moveCamera(this->camera->transform->right() * -0.5f);
 						break;
 					case SDLK_d:
-						cameraTransform->position += cameraTransform->right() * 0.5f;
+						this->camera->moveCamera(this->camera->transform->right() * 0.5f);
+						break;
+					case SDLK_z:
+						this->camera->moveCamera(this->camera->transform->up() * 0.5f);
+						break;
+					case SDLK_x:
+						this->camera->moveCamera(this->camera->transform->up() * -0.5f);
 						break;
 				}
-				this->updateCamera();
 			}
 
 			else if (event.type == SDL_MOUSEMOTION)
 			{
 				//SDL_Log("Mouse Position %dx%d", event.motion.xrel, event.motion.yrel);
 
-				if(this->canRotateCamera) this->rotateCamera(glm::vec2(event.motion.xrel, event.motion.yrel));
+				//if(this->canRotateCamera) this->rotateCamera(glm::vec2(event.motion.xrel, event.motion.yrel));
+				if (this->canRotateCamera) this->camera->rotateCamera(glm::vec2(event.motion.xrel, event.motion.yrel));
 			}
 
 			else if (event.type == SDL_MOUSEBUTTONDOWN)
@@ -240,6 +230,8 @@ void App::updateCamera() {
 		cameraLookAt,
 		this->cameraTransform->up()
 	);
+
+	//this->viewMatrix = glm::inverse(this->cameraTransform->getTransform());
 	
 }
 

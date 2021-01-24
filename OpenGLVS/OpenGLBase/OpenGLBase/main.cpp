@@ -43,12 +43,14 @@ void draw(glm::mat4 projectionMatrix, glm::mat4 viewMatrix) {
 
 	for(int i=0;i<=10;i++){
 		for (int j = 0; j <= 10; j++){
+			for (int k = 0; k <= 10; k++) {
 
-			cubeTransform->position = glm::vec3(float(i) * 4.0f , 0.0f, float(j) * 4.0f);
+			cubeTransform->position = glm::vec3(float(i) * 4.0f , float(k) * 4.0f, float(j) * 4.0f);
 
 			shader->setMVP(vp*cubeTransform->getTransform());
 			
 			cube->draw();
+			}
 		}
 
 	}

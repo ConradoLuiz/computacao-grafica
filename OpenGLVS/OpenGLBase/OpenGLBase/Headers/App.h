@@ -11,6 +11,7 @@
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/string_cast.hpp>
 
+#include <Camera.h>
 #include <Transform.h>
 
 #define AppNull (App*)0
@@ -52,7 +53,9 @@ class App
 		glm::mat4 projectionMatrix;
 		glm::mat4 viewMatrix;
 
+		Camera *camera;
 		Transform *cameraTransform;
+
 		bool canRotateCamera = false;
 
 		glm::vec4 bgcolor;
