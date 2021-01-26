@@ -51,7 +51,8 @@ App::App(const char* title, int width, int height, bool oldOpenGL){
 
 	this->perspectiveAspect = (1.0f*width) / height;
 	this->camera = new Camera(this->perspectiveAspect, 45.0f, 0.01f, 1000.0f, PERSPECTIVE);
-	this->camera->setPosition(glm::vec3(20.0f, 10.0f, 40.0f), glm::vec3(-20.0f, 0.0f, 0.0f));
+	this->camera->setCameraMode(FREE);
+	this->camera->setPosition(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 
 	glEnable(GL_DEPTH_TEST);
 	this->canRun = true;
@@ -120,10 +121,19 @@ bool App::run(DrawCallback callback, KeyboardCallBack keyboardCallBack)
 	}
 	timerId = SDL_AddTimer(40, timerCallback, NULL);
 	
-	
+	Uint64 NOW = SDL_GetPerformanceCounter();
+	Uint64 LAST = 0;
+	double deltaTime = 0;
+
 
 	while (!quit)
 	{
+		LAST = NOW;
+		NOW = SDL_GetPerformanceCounter();
+
+		deltaTime = (double)((NOW - LAST) * 1000 / (double)SDL_GetPerformanceFrequency());
+		Time::m_deltaTime = (float)deltaTime;
+
 		while (SDL_PollEvent(&event))
 		{
 			
@@ -138,7 +148,7 @@ bool App::run(DrawCallback callback, KeyboardCallBack keyboardCallBack)
 				glClearBufferfv(GL_COLOR, 0, &this->bgcolor[0]);
 				glClearBufferfv(GL_DEPTH, 0, depth);
 				
-				callback(this->camera->getProjectionMatrix(), this->camera->getViewMatrix());
+				callback(this->camera->getProjectionMatrix(), this->camera->getViewMatrix(), this->camera);
 				SDL_GL_SwapWindow(this->window);
 			}
 
@@ -176,6 +186,10 @@ bool App::run(DrawCallback callback, KeyboardCallBack keyboardCallBack)
 						break;
 					case SDLK_x:
 						this->camera->moveCamera(this->camera->transform->up() * -0.5f);
+						break;
+					case SDLK_c:
+						CameraMode mode = this->camera->cameraMode == FREE ? ARCBALL : FREE;
+						this->camera->setCameraMode(mode);
 						break;
 				}
 			}

@@ -1,11 +1,12 @@
 {
   "ExpandedNodes": [
     "",
-    "\\openglbase\\src",
-    "\\openglsetup\\OpenGLSetup",
+    "\\FlightSimulator",
     "\\OpenGLVS",
     "\\OpenGLVS\\OpenGLBase",
-    "\\OpenGLVS\\OpenGLBase\\OpenGLBase"
+    "\\OpenGLVS\\OpenGLBase\\OpenGLBase",
+    "\\OpenGLVS\\OpenGLBase\\OpenGLBase\\Headers"
   ],
+  "SelectedNode": "\\OpenGLVS\\OpenGLBase\\OpenGLBase\\Camera.cpp",
   "PreviewInSolutionExplorer": false
 }

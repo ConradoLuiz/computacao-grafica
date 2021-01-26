@@ -2,6 +2,8 @@
 #include <Cube.h>
 #include <Shader.h>
 #include <Transform.h>
+#include <Camera.h>
+#include <Time.h>
 
 App *app = AppNull;
 Shader *shader = ShaderNull;
@@ -17,31 +19,58 @@ void init() {
 float angle = 1.0f;
 bool sobe = true;
 
-void draw(glm::mat4 projectionMatrix, glm::mat4 viewMatrix) {
+void draw(glm::mat4 projectionMatrix, glm::mat4 viewMatrix, Camera* camera) {
 	glm::mat4 vp = projectionMatrix * viewMatrix;
 	glm::mat4 model;
+	camera->arcBallTarget = cubeTransform;
+	cubeTransform->position = glm::vec3(5.0f, 5.0f, 5.0f);
 
-	/*if (cubeTransform->position.y > 5.0f) sobe = false;
-	else if (cubeTransform->position.y < -1.0f) sobe = true;
+	shader->setMVP(vp*cubeTransform->getTransform());
+	cube->draw();
+
+	//SDL_Log(glm::to_string(camera->transform->position).c_str());
+/*
+	cubeTransform->position += glm::vec3(2.5f, -2.5f, 0.0f);
+
+	shader->setMVP(vp*cubeTransform->getTransform());
+	cube->draw();
+
+	cubeTransform->position += glm::vec3(-2.5f, -2.5f, 0.0f);
+
+	shader->setMVP(vp*cubeTransform->getTransform());
+	cube->draw();
+
+	cubeTransform->position += glm::vec3(-2.5f, 2.5f, 0.0f);
+
+	shader->setMVP(vp*cubeTransform->getTransform());
+	cube->draw();
+
+	if (cubeTransform->position.y > 2.5f) { 
+		cubeTransform->position = glm::vec3(0.0f, 2.5f, 0.0f);
+		sobe = false; 
+	}
+	else if (cubeTransform->position.y < -1.0f) { 
+		cubeTransform->position = glm::vec3(0.0f, -1.0f, 0.0f);
+		sobe = true; 
+	}
 
 	if (sobe) {
 		cubeTransform->position += glm::vec3(0.0f, 0.1f, 0.0f);
 	}
 	else {
 		cubeTransform->position += glm::vec3(0.0f, -0.1f, 0.0f);
-	}*/
+	}
 
-	//SDL_Log(glm::to_string(cubeTransform->eulerAngles()).c_str());
-
-	/*shader->setMVP(vp*cubeTransform->getTransform());
+	shader->setMVP(vp*cubeTransform->getTransform());
 	cube->draw();
-
-	cubeTransform->position += glm::vec3(0.0f, 0.0f, 5.0f);
+*/
+	/*
+	cubeTransform->position += glm::vec3(0.0f, 0.0f, 2.5f);
 	shader->setMVP(vp*cubeTransform->getTransform());
 	cube->draw();*/
 
 
-	for(int i=0;i<=10;i++){
+	/*for(int i=0;i<=10;i++){
 		for (int j = 0; j <= 10; j++){
 			for (int k = 0; k <= 10; k++) {
 
@@ -53,26 +82,8 @@ void draw(glm::mat4 projectionMatrix, glm::mat4 viewMatrix) {
 			}
 		}
 
-	}
+	}*/
 
-	cubeTransform->position = glm::vec3(0.0f, 0.0f, 0.0f);
-/*
-	model = glm::translate(glm::mat4(1.0f), glm::vec3(-3.0f, 2.0f, 0.0f));
-	model = glm::rotate(model, -angle, glm::vec3(0.0f, 1.0f, 0.0f));
-	shader->setMVP(vp*model);
-	cube->draw();
-
-	model = glm::translate(glm::mat4(1.0f), glm::vec3(-3.0f, -2.0f, 0.0f));
-	model = glm::rotate(model, -angle, glm::vec3(1.0f, 0.0f, 0.0f));
-
-	shader->setMVP(vp*model);
-	cube->draw();
-
-	model = glm::translate(glm::mat4(1.0f), glm::vec3(3.0f, -2.0f, 0.0f));
-	model = glm::rotate(model, angle, glm::vec3(1.0f, 0.0f, 0.0f));
-
-	shader->setMVP(vp*model);
-	cube->draw();*/
 }
 
 void keyboard(SDL_Event event) {
@@ -90,8 +101,7 @@ void keyboard(SDL_Event event) {
 		case SDLK_RIGHT:
 			cubeTransform->rotate(glm::vec3(0.0, 0.0f, -1.0f), LOCAL_SPACE);
 			break;
-		
-			
+				
 		case SDLK_e:
 			cubeTransform->rotate(glm::vec3(0.0, -1.0f, 0.0), LOCAL_SPACE);
 			break;
@@ -99,14 +109,13 @@ void keyboard(SDL_Event event) {
 			cubeTransform->rotate(glm::vec3(0.0, 1.0f, 0.0), LOCAL_SPACE);
 			break;
 
-		/*
-		case SDLK_w:
-			cubeTransform->position += cubeTransform->forward() * -1.0f;
+		case SDLK_f:
+			cubeTransform->position += cubeTransform->forward() * -1.0f * Time::deltaTime();
 			break;
-		case SDLK_s:
+		case SDLK_g:
 			cubeTransform->position += cubeTransform->forward() * 1.0f;
 			break;
-		case SDLK_a:
+		/*case SDLK_a:
 			cubeTransform->position += cubeTransform->right() * -1.0f;
 			break;
 		case SDLK_d:

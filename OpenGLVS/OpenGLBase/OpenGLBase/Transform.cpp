@@ -1,4 +1,5 @@
 #include <Transform.h>
+#include <SDL.h>
 
 Transform::Transform(glm::vec3 position, glm::vec3 rotation) {
 	this->position = position;
@@ -52,3 +53,12 @@ void Transform::rotate(glm::vec3 eulerAngles, Space space) {
 	}
 }
 
+void Transform::lookAt(glm::vec3 position, glm::vec3 up) {
+	glm::vec3 direction = glm::normalize(position - this->position);
+	
+	float steepness = glm::abs(glm::dot(direction, up));
+	if (steepness > .98f) return;
+
+	glm::quat newOrientation = glm::quatLookAt(direction, up);
+	this->rotation = newOrientation;
+}

@@ -13,10 +13,11 @@
 
 #include <Camera.h>
 #include <Transform.h>
+#include <Time.h>
 
 #define AppNull (App*)0
 
-typedef void(*DrawCallback)(glm::mat4 , glm::mat4);
+typedef void(*DrawCallback)(glm::mat4 , glm::mat4, Camera *);
 typedef void(*KeyboardCallBack)(SDL_Event);
 
 

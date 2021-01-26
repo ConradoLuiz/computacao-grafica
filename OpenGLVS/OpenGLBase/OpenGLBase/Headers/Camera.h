@@ -3,8 +3,11 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/quaternion.hpp>
+#include <glm/gtx/polar_coordinates.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include <Transform.h>
+
+#include <cmath>
 
 enum Projection {
 	ORTHO,
@@ -35,10 +38,16 @@ public:
 	void rotateCamera(glm::vec2 input);
 	void moveCamera(glm::vec3 position);
 
+	void setArcBallTarget(glm::vec3 target);
+	void setArcBallDistance(float distance);
+
 	Transform *transform;
 	
 	glm::mat4 viewMatrix;
 	glm::mat4 projectionMatrix;
+
+	Transform* arcBallTarget = new Transform(glm::vec3(0.0f), glm::vec3(0.0f));
+	float arcBallDistance = 10.0f;
 
 	CameraMode cameraMode = FREE;
 
