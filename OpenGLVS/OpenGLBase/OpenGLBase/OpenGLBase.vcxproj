@@ -134,13 +134,16 @@
     <ClCompile Include="App.cpp" />
     <ClCompile Include="Cube.cpp" />
     <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="Headers\Time.cpp" />
+    <ClCompile Include="Headers\Input.cpp" />
+    <ClCompile Include="Time.cpp" />
     <ClCompile Include="Transform.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Headers\Camera.h" />
+    <ClInclude Include="Headers\globals.h" />
+    <ClInclude Include="Headers\Input.h" />
     <ClInclude Include="Headers\Time.h" />
     <ClInclude Include="Headers\Transform.h" />
     <ClInclude Include="Headers\App.h" />

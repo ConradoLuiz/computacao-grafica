@@ -49,8 +49,8 @@ App::App(const char* title, int width, int height, bool oldOpenGL){
 	}
 	SDL_GL_SetSwapInterval(1);
 
-	this->perspectiveAspect = (1.0f*width) / height;
-	this->camera = new Camera(this->perspectiveAspect, 45.0f, 0.01f, 1000.0f, PERSPECTIVE);
+	float ratio = (1.0f*width) / height;
+	this->camera = new Camera(ratio, 45.0f, 0.01f, 1000.0f, PERSPECTIVE);
 	this->camera->setCameraMode(FREE);
 	this->camera->setPosition(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 
@@ -84,30 +84,6 @@ Uint32 timerCallback(Uint32 interval, void *param)
 	return interval;
 }
 
-void App::updatePerspectiveAndLookAtMatrix()
-{
-	this->projectionMatrix = glm::perspective(this->perspectiveFOV, this->perspectiveAspect, this->perspectiveNear, this->perspectiveFar);
-	this->viewMatrix = glm::lookAt(this->cameraTransform->position, this->cameraTransform->position + this->cameraTransform->forward() * -5.0f , this->cameraTransform->up());
-	
-	this->vp = this->projectionMatrix * this->viewMatrix;
-}
-
-void App::perspective(float perspectiveFOV, float perspectiveNear, float perspectiveFar)
-{
-	this->perspectiveFOV = perspectiveFOV;
-	this->perspectiveNear = perspectiveNear;
-	this->perspectiveFar = perspectiveFar;
-	this->updatePerspectiveAndLookAtMatrix();
-}
-
-void App::lookAt(glm::vec3 lookAtEye, glm::vec3 lookAtCenter, glm::vec3 lookAtUp)
-{
-	this->lookAtEye = lookAtEye;
-	this->lookAtCenter = lookAtCenter;
-	this->lookAtUp = lookAtUp;
-	this->updatePerspectiveAndLookAtMatrix();
-}
-
 bool App::run(DrawCallback callback, KeyboardCallBack keyboardCallBack)
 {
 	GLfloat depth[] = { 1.0 };
@@ -135,13 +111,16 @@ bool App::run(DrawCallback callback, KeyboardCallBack keyboardCallBack)
 		Time::m_deltaTime = (float)deltaTime;
 
 		while (SDL_PollEvent(&event))
-		{
-			
+		{	
+			const Uint8 *state = SDL_GetKeyboardState(NULL);
+			this->trackKeys(state);
+
 			if (event.type == SDL_QUIT)
 			{
 				quit = 1;
 				break;
 			}
+			else if (event.type == SDL_MOUSEMOTION) { Input::m_mouse = glm::vec2(event.motion.x, event.motion.y); }
 
 			else if (event.type == SDL_USEREVENT)
 			{
@@ -159,48 +138,13 @@ bool App::run(DrawCallback callback, KeyboardCallBack keyboardCallBack)
 					int width = event.window.data1;
 					int height = event.window.data2;
 					glViewport(0, 0, (GLsizei)width, (GLsizei)height);
-					this->perspectiveAspect = ((1.0f)*width) / height;
-					//this->updatePerspectiveAndLookAtMatrix();
-					this->camera->updateProjection(this->perspectiveAspect, 45.0f, 0.01f, 1000.0f, PERSPECTIVE);
+					
+					this->camera->updateProjection(((1.0f)*width) / height, 45.0f, 0.01f, 1000.0f, PERSPECTIVE);
 				}
 			}
 
-			else if (event.type == SDL_KEYDOWN)
-			{	
-				keyboardCallBack(event);
-				switch (event.key.keysym.sym) {
-					case SDLK_w:
-						this->camera->moveCamera(this->camera->transform->forward() * -0.5f);
-						break;
-					case SDLK_s:
-						this->camera->moveCamera(this->camera->transform->forward() * 0.5f);
-						break;
-					case SDLK_a:
-						this->camera->moveCamera(this->camera->transform->right() * -0.5f);
-						break;
-					case SDLK_d:
-						this->camera->moveCamera(this->camera->transform->right() * 0.5f);
-						break;
-					case SDLK_z:
-						this->camera->moveCamera(this->camera->transform->up() * 0.5f);
-						break;
-					case SDLK_x:
-						this->camera->moveCamera(this->camera->transform->up() * -0.5f);
-						break;
-					case SDLK_c:
-						CameraMode mode = this->camera->cameraMode == FREE ? ARCBALL : FREE;
-						this->camera->setCameraMode(mode);
-						break;
-				}
-			}
-
-			else if (event.type == SDL_MOUSEMOTION)
-			{
-				//SDL_Log("Mouse Position %dx%d", event.motion.xrel, event.motion.yrel);
-
-				//if(this->canRotateCamera) this->rotateCamera(glm::vec2(event.motion.xrel, event.motion.yrel));
-				if (this->canRotateCamera) this->camera->rotateCamera(glm::vec2(event.motion.xrel, event.motion.yrel));
-			}
+			else if (event.type == SDL_KEYDOWN) { Input::setKeyPressed(event.key.keysym.scancode, true);  }
+			else if (event.type == SDL_KEYUP)   { Input::setKeyPressed(event.key.keysym.scancode, false); }
 
 			else if (event.type == SDL_MOUSEBUTTONDOWN)
 			{
@@ -219,6 +163,13 @@ bool App::run(DrawCallback callback, KeyboardCallBack keyboardCallBack)
 
 				}
 			}
+
+			if (event.type == SDL_MOUSEMOTION)
+			{
+				Input::m_previousMouse = glm::vec2(event.motion.x, event.motion.y);
+
+				if (this->canRotateCamera) this->camera->rotateCamera(glm::vec2(event.motion.xrel, event.motion.yrel));
+			}
 			
 		}
 	}
@@ -226,34 +177,25 @@ bool App::run(DrawCallback callback, KeyboardCallBack keyboardCallBack)
 	return true;
 }
 
-void App::rotateCamera(glm::vec2 mouse) {
-
-	this->cameraTransform->rotate(glm::vec3(-mouse.y , 0.0f, 0.0f)/10.0f, LOCAL_SPACE);
-	this->cameraTransform->rotate(glm::vec3(0.0F, -mouse.x, 0.0f) / 10.0f, WORLD_SPACE);
-
-	this->updateCamera();
-	
-}
-
-void App::updateCamera() {
-
-	glm::vec3 cameraLookAt = this->cameraTransform->position + (this->cameraTransform->forward() * -5.0f);
-
-	this->viewMatrix = glm::lookAt(
-		this->cameraTransform->position,
-		cameraLookAt,
-		this->cameraTransform->up()
-	);
-
-	//this->viewMatrix = glm::inverse(this->cameraTransform->getTransform());
-	
-}
-
-
 void App::background(float r, float g, float b, float a)
 {
 	this->bgcolor.r = r;
 	this->bgcolor.g = g;
 	this->bgcolor.b = b;
 	this->bgcolor.a = a;
+}
+
+void App::trackKeys(const Uint8 *state) {
+	if (state[SDL_SCANCODE_UP])    { Input::setKeyDown(SDL_SCANCODE_UP,     true); } else { Input::setKeyDown(SDL_SCANCODE_UP,     false); }
+	if (state[SDL_SCANCODE_DOWN])  { Input::setKeyDown(SDL_SCANCODE_DOWN,   true); } else { Input::setKeyDown(SDL_SCANCODE_DOWN,   false); }
+	if (state[SDL_SCANCODE_LEFT])  { Input::setKeyDown(SDL_SCANCODE_LEFT,   true); } else { Input::setKeyDown(SDL_SCANCODE_LEFT,   false); }
+	if (state[SDL_SCANCODE_RIGHT]) { Input::setKeyDown(SDL_SCANCODE_RIGHT,  true); } else { Input::setKeyDown(SDL_SCANCODE_RIGHT,  false); }
+	if (state[SDL_SCANCODE_W])     { Input::setKeyDown(SDL_SCANCODE_W,      true); } else { Input::setKeyDown(SDL_SCANCODE_W,      false); }
+	if (state[SDL_SCANCODE_S])     { Input::setKeyDown(SDL_SCANCODE_S,      true); } else { Input::setKeyDown(SDL_SCANCODE_S,      false); }
+	if (state[SDL_SCANCODE_A])     { Input::setKeyDown(SDL_SCANCODE_A,      true); } else { Input::setKeyDown(SDL_SCANCODE_A,      false); }
+	if (state[SDL_SCANCODE_D])     { Input::setKeyDown(SDL_SCANCODE_D,      true); } else { Input::setKeyDown(SDL_SCANCODE_D,      false); }
+	if (state[SDL_SCANCODE_Q])     { Input::setKeyDown(SDL_SCANCODE_Q,      true); } else { Input::setKeyDown(SDL_SCANCODE_Q,      false); }
+	if (state[SDL_SCANCODE_E])     { Input::setKeyDown(SDL_SCANCODE_E,      true); } else { Input::setKeyDown(SDL_SCANCODE_E,      false); }
+	if (state[SDL_SCANCODE_Z])     { Input::setKeyDown(SDL_SCANCODE_Z,      true); } else { Input::setKeyDown(SDL_SCANCODE_Z,      false); }
+	if (state[SDL_SCANCODE_X])     { Input::setKeyDown(SDL_SCANCODE_X,      true); } else { Input::setKeyDown(SDL_SCANCODE_X,      false); }
 }

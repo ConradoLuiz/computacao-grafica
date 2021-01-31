@@ -1,13 +1,6 @@
 #pragma once
-
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/quaternion.hpp>
-#include <glm/gtx/polar_coordinates.hpp>
-#include <glm/gtx/string_cast.hpp>
+#include <globals.h>
 #include <Transform.h>
-
-#include <cmath>
 
 enum Projection {
 	ORTHO,
@@ -33,6 +26,8 @@ public:
 
 	void updateProjection();
 	void updateProjection(float aspect, float FOV, float nearPlane, float farPlane, Projection projection = PERSPECTIVE);
+
+	void update();
 	void onMouseUpdate(glm::vec2 mouse);
 	
 	void rotateCamera(glm::vec2 input);

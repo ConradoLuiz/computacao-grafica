@@ -1,19 +1,10 @@
 #pragma once
-#include <iostream>
-#include <SDL.h>
-
-#include <GL/glew.h>
-
-#include <SDL_opengl.h>
-
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/quaternion.hpp>
-#include <glm/gtx/string_cast.hpp>
-
+#include <globals.h>
 #include <Camera.h>
 #include <Transform.h>
 #include <Time.h>
+#include <Input.h>
+#include <typeinfo>
 
 #define AppNull (App*)0
 
@@ -30,33 +21,15 @@ class App
 		virtual void background(float r, float g, float b, float a = 1.0f);
 
 	private:
-		virtual void updatePerspectiveAndLookAtMatrix();
-		void perspective(float perspectiveFOV, float perspectiveNear, float perspectiveFar);
-		void lookAt(glm::vec3 lookAtEye, glm::vec3 lookAtCenter, glm::vec3 lookAtUp);
-		void rotateCamera(glm::vec2 mouse);
-		void updateCamera();
-
 		SDL_Window *window;
 		SDL_GLContext context;
 		int WIDTH, HEIGHT;
 		bool canRun;
-		glm::mat4 vp;
 
-		glm::vec3 lookAtEye;
-		glm::vec3 lookAtCenter;
-		glm::vec3 lookAtUp;
-
-		float perspectiveFOV;
-		float perspectiveAspect;
-		float perspectiveNear;
-		float perspectiveFar;
-
-		glm::mat4 projectionMatrix;
-		glm::mat4 viewMatrix;
-
+		void trackKeys(const Uint8 *state);
+		
 		Camera *camera;
-		Transform *cameraTransform;
-
+		
 		bool canRotateCamera = false;
 
 		glm::vec4 bgcolor;

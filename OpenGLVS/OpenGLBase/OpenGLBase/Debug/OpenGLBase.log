@@ -1,2 +1,12 @@
-﻿  Shader.cpp
+﻿  App.cpp
+  Cube.cpp
+  Camera.cpp
+  Input.cpp
+  Time.cpp
+  Transform.cpp
+  main.cpp
+c:\users\conrado\documents\dev\computacao-grafica\openglvs\openglbase\openglbase\main.cpp(50): warning C4101: 'model': unreferenced local variable
+  Shader.cpp
+  Generating Code...
+  LINK : C:\Users\conrado\Documents\Dev\computacao-grafica\OpenGLVS\OpenGLBase\Debug\OpenGLBase.exe not found or not built by the last incremental link; performing full link
   OpenGLBase.vcxproj -> C:\Users\conrado\Documents\Dev\computacao-grafica\OpenGLVS\OpenGLBase\Debug\OpenGLBase.exe

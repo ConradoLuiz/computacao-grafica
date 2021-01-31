@@ -16,4 +16,5 @@ private:
 	GLuint cubeVertexBufferId;
 	GLuint cubeColorBufferId;
 	GLuint cubeIndexBufferId;
+	unsigned int m_cubeIndex[36];
 };

@@ -26,8 +26,7 @@ Cube::Cube()
 		0.5f,  0.0f,  0.5f
 	};
 
-	unsigned int cubeIndex[] =
-	{
+	unsigned int m_cubeIndex[] = { 
 		0, 1, 2,
 		2, 3, 0,
 		1, 5, 6,
@@ -45,22 +44,31 @@ Cube::Cube()
 	glGenVertexArrays(1, &this->cubeVertexArrayId);
 	glBindVertexArray(this->cubeVertexArrayId);
 
+	// BUFFER DE VERTEX ------------------------------------------------------------------------------------
+
 	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
 
 	glGenBuffers(1, &this->cubeVertexBufferId);
 	glBindBuffer(GL_ARRAY_BUFFER, this->cubeVertexBufferId);
 	glBufferData(GL_ARRAY_BUFFER, 8 * 3 * sizeof(float), cubeVertex, GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, NULL);
+	// -----------------------------------------------------------------------------------------------------
+
+	// BUFFER DE COR DE CADA VERTEX ------------------------------------------------------------------------
+
+	glEnableVertexAttribArray(1);
 
 	glGenBuffers(1, &this->cubeColorBufferId);
 	glBindBuffer(GL_ARRAY_BUFFER, this->cubeColorBufferId);
 	glBufferData(GL_ARRAY_BUFFER, 8 * 3 * sizeof(float), cubeColorPerVertex, GL_STATIC_DRAW);
 	glVertexAttribPointer(1, 3, GL_FLOAT, false, 0, NULL);
+	// -----------------------------------------------------------------------------------------------------
+
+	// BUFFER DE INDEX (FACES) -----------------------------------------------------------------------------
 
 	glGenBuffers(1, &this->cubeIndexBufferId);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->cubeIndexBufferId);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 12 * 3 * sizeof(unsigned int), cubeIndex, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 12 * 3 * sizeof(unsigned int), m_cubeIndex, GL_STATIC_DRAW);
 }
 
 Cube::~Cube()
@@ -74,5 +82,5 @@ Cube::~Cube()
 void Cube::draw()
 {
 	glBindVertexArray(this->cubeVertexArrayId);
-	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, sizeof(m_cubeIndex) / sizeof(unsigned int) , GL_UNSIGNED_INT, 0);
 }

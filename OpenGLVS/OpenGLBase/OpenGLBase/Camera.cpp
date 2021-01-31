@@ -55,6 +55,26 @@ glm::mat4 Camera::getViewProjectionMatrix() {
 	return this->projectionMatrix * glm::inverse(this->transform->getTransform());
 }
 
+void Camera::update() {
+	if (this->cameraMode == FREE) {
+		return;
+	}
+	else if (this->cameraMode == ARCBALL) {
+		// CLAMP DISTANCE TO TARGET
+		glm::vec3 newPosition = this->transform->position;
+
+		if (glm::length(newPosition - this->arcBallTarget->position) > this->arcBallDistance) {
+			newPosition = this->arcBallTarget->position + glm::normalize(newPosition - this->arcBallTarget->position) * this->arcBallDistance;
+		}
+		if (glm::length(newPosition - this->arcBallTarget->position) < (this->arcBallDistance - .2f)) {
+			newPosition = this->arcBallTarget->position + glm::normalize(newPosition - this->arcBallTarget->position) * this->arcBallDistance;
+		}
+
+		this->transform->position = newPosition;
+		this->transform->lookAt(this->arcBallTarget->position);
+	}
+}
+
 void Camera::onMouseUpdate(glm::vec2 mouse) {
 	this->rotateCamera(mouse);
 }

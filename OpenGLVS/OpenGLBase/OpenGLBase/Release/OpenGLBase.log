@@ -1,13 +1,8 @@
-﻿  App.cpp
-  Camera.cpp
-  Cube.cpp
-  Time.cpp
-  Shader.cpp
-  main.cpp
-c:\users\conrado\documents\dev\computacao-grafica\openglvs\openglbase\openglbase\main.cpp(24): warning C4101: 'model': unreferenced local variable
+﻿  main.cpp
+c:\users\conrado\documents\dev\computacao-grafica\openglvs\openglbase\openglbase\main.cpp(50): warning C4101: 'model': unreferenced local variable
   Generating code
-  10 of 328 functions ( 3.0%) were compiled, the rest were copied from previous compilation.
+  2 of 582 functions ( 0.3%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    0 functions had inline decision re-evaluated but remain unchanged
+    1 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   OpenGLBase.vcxproj -> C:\Users\conrado\Documents\Dev\computacao-grafica\OpenGLVS\OpenGLBase\Release\OpenGLBase.exe
