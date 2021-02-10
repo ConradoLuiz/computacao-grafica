@@ -144,3 +144,7 @@ void Shader::setMVP(glm::mat4 mvp)
 	GLuint mvpId = glGetUniformLocation(this->programId, "MVP");
 	glUniformMatrix4fv(mvpId, 1, GL_FALSE, &mvp[0][0]);
 }
+
+void Shader::setUniformSampler2D() {
+
+}

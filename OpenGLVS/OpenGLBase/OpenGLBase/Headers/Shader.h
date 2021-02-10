@@ -13,6 +13,7 @@ public:
 	virtual ~Shader();
 	virtual bool useProgram();
 	virtual void setMVP(glm::mat4 mvp);
+	virtual void setUniformSampler2D();
 
 private:
 	GLuint compileShader(std::string src, GLenum shaderType);

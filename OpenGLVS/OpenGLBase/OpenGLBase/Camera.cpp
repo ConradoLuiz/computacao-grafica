@@ -101,7 +101,7 @@ void Camera::rotateCamera(glm::vec2 input) {
 
 		direction = glm::normalize(direction);
 
-		float steepness = glm::dot(direction, this->arcBallTarget->up());
+		float steepness = glm::dot(direction, glm::vec3(0.0f, 1.0f, 0.0f));
 		//CORRECT FOR CAMERA FLIPPING UPSIDE DOWN
 		if (glm::abs(steepness) > .98f) {
 			float correction;

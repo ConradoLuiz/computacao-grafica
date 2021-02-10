@@ -6,6 +6,7 @@
 #include <Input.h>
 #include <typeinfo>
 
+
 #define AppNull (App*)0
 
 typedef void(*DrawCallback)(glm::mat4 , glm::mat4, Camera *);
@@ -19,11 +20,16 @@ class App
 		virtual ~App();
 		virtual bool run(DrawCallback callback, KeyboardCallBack keyboardCallback);
 		virtual void background(float r, float g, float b, float a = 1.0f);
+		virtual void toggleFullscreen();
+		virtual void setResolution(int width, int height);
+		virtual glm::vec2 GetMonitorSize();
 
+		int WIDTH, HEIGHT;
 	private:
+		void ConfigStyle(ImGuiStyle* style);
 		SDL_Window *window;
 		SDL_GLContext context;
-		int WIDTH, HEIGHT;
+		bool m_isFullscreen;
 		bool canRun;
 
 		void trackKeys(const Uint8 *state);

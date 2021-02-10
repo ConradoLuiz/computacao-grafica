@@ -4,83 +4,129 @@ Cube::Cube()
 {
 	float cubeVertex[] =
 	{
-		-1.0f, -1.0f,  1.0f,
-		 1.0f, -1.0f,  1.0f,
-		 1.0f,  1.0f,  1.0f,
-		-1.0f,  1.0f,  1.0f,
-		-1.0f, -1.0f, -1.0f,
-		 1.0f, -1.0f, -1.0f,
-		 1.0f,  1.0f, -1.0f,
-		-1.0f,  1.0f, -1.0f
-	};
+		//POSITIONS             //COLORS             // TEX COORDS   //NORMALS
 
-	float cubeColorPerVertex[] =
-	{
-		1.0f,  0.0f,  0.0f,
-		1.0f,  1.0f,  0.0f,
-		0.0f,  1.0f,  0.0f,
-		0.0f,  1.0f,  1.0f,
-		0.0f,  0.0f,  1.0f,
-		1.0f,  0.0f,  1.0f,
-		1.0f,  0.0f,  0.5f,
-		0.5f,  0.0f,  0.5f
+		//FRONT FACE 
+		-1.0f, -1.0f,  1.0f,    1.0f,  0.0f, 0.0f,   0.0f, 0.0f,     0.0f, 0.0f,  1.0f,
+		 1.0f, -1.0f,  1.0f,    1.0f,  1.0f, 0.0f,   0.0f, 0.5f,     0.0f, 0.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,    0.0f,  1.0f, 0.0f,   0.3f, 0.5f,     0.0f, 0.0f,  1.0f,
+		-1.0f,  1.0f,  1.0f,    0.0f,  1.0f, 1.0f,   0.3f, 0.0f,     0.0f, 0.0f,  1.0f,
+																				 
+		//RIGHT FACE															 
+		 1.0f, -1.0f,  1.0f,    1.0f,  1.0f, 0.0f,   0.0f, 0.5f,     1.0f, 0.0f,  0.0f,
+		 1.0f, -1.0f, -1.0f,    1.0f,  1.0f, 0.0f,   0.3f, 0.5f,     1.0f, 0.0f,  0.0f,
+		 1.0f,  1.0f, -1.0f,    1.0f,  1.0f, 0.0f,   0.3f, 1.0f,     1.0f, 0.0f,  0.0f,
+		 1.0f,  1.0f,  1.0f,    0.0f,  1.0f, 0.0f,   0.0f, 1.0f,     1.0f, 0.0f,  0.0f,
+
+		 //BACK FACE
+		 1.0f, -1.0f, -1.0f,    1.0f,  1.0f, 0.0f,   0.66f, 0.5f,    0.0f, 0.0f, -1.0f,
+		-1.0f, -1.0f, -1.0f,    1.0f,  1.0f, 0.0f,   1.0f,  0.5f,    0.0f, 0.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,    1.0f,  1.0f, 0.0f,   1.0f,  1.0f,    0.0f, 0.0f, -1.0f,
+		 1.0f,  1.0f, -1.0f,    1.0f,  1.0f, 0.0f,   0.66f, 1.0f,    0.0f, 0.0f, -1.0f,
+
+		 //LEFT FACE
+		-1.0f, -1.0f, -1.0f,    1.0f,  1.0f, 0.0f,   0.66f, 0.0f,    -1.0f, 0.0f,  0.0f,
+		-1.0f, -1.0f,  1.0f,    1.0f,  0.0f, 0.0f,   1.0f,  0.0f,    -1.0f, 0.0f,  0.0f,
+		-1.0f,  1.0f,  1.0f,    0.0f,  1.0f, 1.0f,   1.0f,  0.5f,    -1.0f, 0.0f,  0.0f,
+		-1.0f,  1.0f, -1.0f,    1.0f,  1.0f, 0.0f,   0.66f, 0.5f,    -1.0f, 0.0f,  0.0f,
+
+		//TOP FACE 
+		-1.0f,  1.0f,  1.0f,    0.0f,  1.0f, 1.0f,   0.33f, 0.0f,     0.0f, 1.0f,  0.0f,
+		 1.0f,  1.0f,  1.0f,    0.0f,  1.0f, 0.0f,   0.66f, 0.0f,     0.0f, 1.0f,  0.0f,
+		 1.0f,  1.0f, -1.0f,    1.0f,  1.0f, 0.0f,   0.66f, 0.5f,     0.0f, 1.0f,  0.0f,
+		-1.0f,  1.0f, -1.0f,    1.0f,  1.0f, 0.0f,   0.33f, 0.5f,     0.0f, 1.0f,  0.0f,
+
+		//BOTTOM FACE
+		-1.0f,  -1.0f,  1.0f,    0.0f,  1.0f, 1.0f,   0.33f, 0.5f,     0.0f, -1.0f,  0.0f,
+		 1.0f,  -1.0f,  1.0f,    0.0f,  1.0f, 0.0f,   0.66f, 0.5f,     0.0f, -1.0f,  0.0f,
+		 1.0f,  -1.0f, -1.0f,    1.0f,  1.0f, 0.0f,   0.66f, 1.0f,     0.0f, -1.0f,  0.0f,
+		-1.0f,  -1.0f, -1.0f,    1.0f,  1.0f, 0.0f,   0.33f, 1.0f,     0.0f, -1.0f,  0.0f
 	};
 
 	unsigned int m_cubeIndex[] = { 
+		//FRONT FACE
 		0, 1, 2,
 		2, 3, 0,
-		1, 5, 6,
-		6, 2, 1,
-		3, 2, 6,
-		6, 7, 3,
-		4, 0, 3,
-		3, 7, 4,
-		5, 4, 7,
-		7, 6, 5,
-		4, 5, 1,
-		1, 0, 4
+		//RIGHT FACE
+		4, 5, 6,
+		6, 7, 4,
+		//BACK FACE
+		8, 9, 10,
+		10, 11, 8,
+		//LEFT FACE
+		12, 13, 14,
+		14, 15, 12,
+		//TOP FACE
+		16, 17, 18,
+		18, 19, 16,
+		//BOTTOM FACE
+		20, 21, 22,
+		22, 23, 20
 	};
 
-	glGenVertexArrays(1, &this->cubeVertexArrayId);
-	glBindVertexArray(this->cubeVertexArrayId);
+	m_tex2d = SOIL_load_OGL_texture(
+		"res/textures/dado.png",
+		SOIL_LOAD_AUTO, 
+		SOIL_CREATE_NEW_ID,
+		SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT
+	);
+	
+	
+	// USANDO 1 VBO COM STRIDE
+	m_vao = new VertexArray();
+	VertexBufferLayout layout;
 
-	// BUFFER DE VERTEX ------------------------------------------------------------------------------------
+	// POSITIONS
+	layout.Push<float>(3);
+	// COLORS
+	layout.Push<float>(3);
+	//TEX COORDS
+	layout.Push<float>(2);
+	//NORMALS
+	layout.Push<float>(3);
 
-	glEnableVertexAttribArray(0);
-
-	glGenBuffers(1, &this->cubeVertexBufferId);
-	glBindBuffer(GL_ARRAY_BUFFER, this->cubeVertexBufferId);
-	glBufferData(GL_ARRAY_BUFFER, 8 * 3 * sizeof(float), cubeVertex, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, NULL);
-	// -----------------------------------------------------------------------------------------------------
-
-	// BUFFER DE COR DE CADA VERTEX ------------------------------------------------------------------------
-
-	glEnableVertexAttribArray(1);
-
-	glGenBuffers(1, &this->cubeColorBufferId);
-	glBindBuffer(GL_ARRAY_BUFFER, this->cubeColorBufferId);
-	glBufferData(GL_ARRAY_BUFFER, 8 * 3 * sizeof(float), cubeColorPerVertex, GL_STATIC_DRAW);
-	glVertexAttribPointer(1, 3, GL_FLOAT, false, 0, NULL);
-	// -----------------------------------------------------------------------------------------------------
+	m_position_vbo = new VertexBuffer(cubeVertex, sizeof(cubeVertex), GL_STATIC_DRAW);
+	m_position_vbo->Bind();
+	m_vao->AddBuffer(*m_position_vbo, layout);
 
 	// BUFFER DE INDEX (FACES) -----------------------------------------------------------------------------
+	m_ebo = new IndexBuffer(m_cubeIndex, sizeof(m_cubeIndex) / sizeof(unsigned int), GL_STATIC_DRAW);
+	m_ebo->Bind();
+	
 
-	glGenBuffers(1, &this->cubeIndexBufferId);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->cubeIndexBufferId);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 12 * 3 * sizeof(unsigned int), m_cubeIndex, GL_STATIC_DRAW);
+	/*
+	//USANDO 2 VBO (1 PARA POSIÇÃO E 1 PARA COR)
+	m_vao = new VertexArray();
+	VertexBufferLayout *layout = new VertexBufferLayout();
+
+	layout->Push<float>(3);	
+	
+	m_position_vbo = new VertexBuffer(cubeVertexPosition, sizeof(cubeVertexPosition), GL_STATIC_DRAW);
+	m_position_vbo->Bind();
+	m_vao->AddBuffer(*m_position_vbo, *layout);
+
+	m_color_vbo = new VertexBuffer(cubeColorPerVertex, sizeof(cubeColorPerVertex), GL_STATIC_DRAW);
+	m_color_vbo->Bind();
+	m_vao->AddBuffer(*m_color_vbo, *layout);
+	
+	// BUFFER DE INDEX (FACES) -----------------------------------------------------------------------------
+	m_ebo = new IndexBuffer(m_cubeIndex, sizeof(m_cubeIndex) / sizeof(unsigned int), GL_STATIC_DRAW);
+	m_ebo->Bind();
+	*/
 }
 
 Cube::~Cube()
 {
-	glDeleteBuffers(1, &this->cubeVertexArrayId);
-	glDeleteBuffers(1, &this->cubeColorBufferId);
-	glDeleteBuffers(1, &this->cubeIndexBufferId);
-	glDeleteVertexArrays(1, &this->cubeVertexArrayId);
+	delete m_position_vbo;
+	//delete m_color_vbo;
+	delete m_ebo;
+	delete m_vao;
 }
 
 void Cube::draw()
 {
-	glBindVertexArray(this->cubeVertexArrayId);
+	m_vao->Bind();
+	m_ebo->Bind();
+	glBindTexture(GL_TEXTURE_2D, m_tex2d);
 	glDrawElements(GL_TRIANGLES, sizeof(m_cubeIndex) / sizeof(unsigned int) , GL_UNSIGNED_INT, 0);
 }

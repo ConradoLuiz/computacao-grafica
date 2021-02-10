@@ -99,12 +99,13 @@ StyleCopReport.xml
 *.pidb
 *.svclog
 *.scc
+*.ipch
 
 # Chutzpah Test files
 _Chutzpah*
 
 # Visual C++ cache files
-ipch/
+ipch/*
 *.aps
 *.ncb
 *.opendb
@@ -363,3 +364,5 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+.tlog
