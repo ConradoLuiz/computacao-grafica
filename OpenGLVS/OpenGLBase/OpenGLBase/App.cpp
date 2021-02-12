@@ -47,7 +47,7 @@ App::App(const char* title, int width, int height, bool oldOpenGL){
 		SDL_Log("Falha ao inicializar GLEW");
 		return;
 	}
-	SDL_GL_SetSwapInterval(1);
+	SDL_GL_SetSwapInterval(0);
 
 	float ratio = (1.0f*width) / height;
 	this->camera = new Camera(ratio, 45.0f, 0.01f, 1000.0f, PERSPECTIVE);
@@ -73,9 +73,9 @@ App::App(const char* title, int width, int height, bool oldOpenGL){
 
 	this->canRun = true;
 
-	this->bgcolor.r = 0.3f;
-	this->bgcolor.g = 0.6f;
-	this->bgcolor.b = 0.7f;
+	this->bgcolor.r = 0.0f;
+	this->bgcolor.g = 0.0f;
+	this->bgcolor.b = 0.0f;
 	this->bgcolor.a = 1.0f;
 
 }

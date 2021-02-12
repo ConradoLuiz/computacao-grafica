@@ -1,10 +1,12 @@
 #pragma once
 #include <globals.h>
+#include <Mesh.h>
 
 struct VertexBufferElement
 {
 	unsigned int type;
 	unsigned int count;
+	unsigned int size;
 	bool normalized;
 
 	static unsigned int GetSizeOfType(unsigned int type)
@@ -17,6 +19,7 @@ struct VertexBufferElement
 		}
 		return 0;
 	}
+
 };
 
 class VertexBufferLayout
@@ -34,22 +37,83 @@ public:
 	template<>
 	void Push<float>(unsigned int count)
 	{
-		m_Elements.push_back({ GL_FLOAT, count, false });
-		m_Stride += count * VertexBufferElement::GetSizeOfType(GL_FLOAT);
+		VertexBufferElement element = { GL_FLOAT, count, VertexBufferElement::GetSizeOfType(GL_FLOAT), false };
+		
+		m_Elements.push_back(element);
+		m_Stride += count * element.size;
 	}
 
 	template<>
 	void Push<unsigned int>(unsigned int count)
 	{
-		m_Elements.push_back({ GL_UNSIGNED_INT , count, false });
-		m_Stride += count * VertexBufferElement::GetSizeOfType(GL_UNSIGNED_INT);
+		VertexBufferElement element = { GL_FLOAT, count, VertexBufferElement::GetSizeOfType(GL_UNSIGNED_INT), false };
+		
+		m_Elements.push_back(element);
+		m_Stride += count * element.size;
 	}
 
 	template<>
 	void Push<unsigned char>(unsigned int count)
 	{
-		m_Elements.push_back({ GL_UNSIGNED_BYTE , count, true });
-		m_Stride += count * VertexBufferElement::GetSizeOfType(GL_UNSIGNED_BYTE);
+		VertexBufferElement element = { GL_FLOAT, count, VertexBufferElement::GetSizeOfType(GL_UNSIGNED_BYTE), false };
+
+		m_Elements.push_back(element);
+		m_Stride += count * element.size;
+	}
+
+	template<typename T>
+	void Push()
+	{
+		static_assert(false);
+	}
+
+	template <>
+	void Push<glm::vec4>()
+	{
+		unsigned int count = 4;
+		VertexBufferElement element = { GL_FLOAT, count, 16, false };
+		
+		m_Elements.push_back(element);
+		m_Stride += element.size;
+	}
+
+	template<>
+	void Push<glm::vec3>()
+	{
+		unsigned int count = 3;
+		VertexBufferElement element = { GL_FLOAT, count, 12, false };
+			
+		m_Elements.push_back(element);
+		m_Stride += element.size;
+	}
+
+	template<>
+	void Push<glm::vec2>()
+	{
+		unsigned int count = 2;
+		VertexBufferElement element = { GL_FLOAT, count, 8, false };
+		
+		m_Elements.push_back(element);
+		m_Stride += element.size;
+	}
+
+	template<>
+	void Push<Vertex>()
+	{
+
+		Push<glm::vec3>();
+		Push<glm::vec3>();
+		Push<glm::vec2>();
+		Push<glm::vec3>();
+		Push<glm::vec3>();
+		Push<glm::vec3>();
+
+		//layout.Push<float>(3);
+		//layout.Push<float>(3);
+		//layout.Push<float>(2);
+		//layout.Push<float>(3);
+		//layout.Push<float>(3);
+		//layout.Push<float>(3);
 	}
 
 	inline unsigned int GetStride() const { return m_Stride; }

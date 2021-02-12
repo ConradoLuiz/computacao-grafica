@@ -25,6 +25,7 @@ class App
 		virtual glm::vec2 GetMonitorSize();
 
 		int WIDTH, HEIGHT;
+
 	private:
 		void ConfigStyle(ImGuiStyle* style);
 		SDL_Window *window;

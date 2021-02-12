@@ -3,17 +3,19 @@
 #include <Shader.h>
 #include <Transform.h>
 #include <Camera.h>
+#include <Sphere.h>
 #include <Time.h>
 
 App *app = AppNull;
 Shader *shader = ShaderNull;
 Cube *cube = CubeNull;
-Transform *cubeTransform = new Transform(glm::vec3(0.0f, 0.0f, 0.0f));
+Sphere *sphere = (Sphere*)NULL;
 
 void init() {
 	app = new App();
 	shader = new Shader("vertexAndColorShader");
 	cube = new Cube();
+	sphere = new Sphere();
 }
 
 float angle = 1.0f;
@@ -31,17 +33,20 @@ void draw(glm::mat4 projectionMatrix, glm::mat4 viewMatrix, Camera* camera) {
 
 	updateCamera(camera);
 	if (Input::KeyDown(SDL_SCANCODE_UP)) {
-		cubeTransform->rotate(glm::vec3(-1.0f, 0.0f, 0.0f), LOCAL_SPACE);
+		cube->transform->rotate(glm::vec3(-1.0f, 0.0f, 0.0f), LOCAL_SPACE);
 	}
 	if (Input::KeyDown(SDL_SCANCODE_DOWN)) {
-		cubeTransform->rotate(glm::vec3(1.0f, 0.0f, 0.0f), LOCAL_SPACE);
+		cube->transform->rotate(glm::vec3(1.0f, 0.0f, 0.0f), LOCAL_SPACE);
 	}
-	camera->arcBallTarget = cubeTransform;
-	cubeTransform->position = glm::vec3(angle, angle, 5.0f);
+	camera->arcBallTarget = sphere->transform;
+	cube->transform->position = glm::vec3(angle, angle, 5.0f);
 	camera->update();
 
-	shader->setMVP(vp*cubeTransform->getTransform());
+	shader->setMVP(vp*cube->transform->getTransform());
 	cube->draw();
+
+	shader->setMVP(vp*sphere->transform->getTransform());
+	sphere->draw();
 
 	if (Input::KeyPressed(SDL_SCANCODE_F3)) { debugMode = !debugMode; }
 	if (debugMode) 
@@ -69,48 +74,48 @@ void draw(glm::mat4 projectionMatrix, glm::mat4 viewMatrix, Camera* camera) {
 
 		ShowStatsOverlay();
 
-		ImGui::ShowDemoWindow();
+		//ImGui::ShowDemoWindow();
 	}
 
 	//SDL_Log(glm::to_string(camera->transform->position).c_str());
 /*
-	cubeTransform->position += glm::vec3(2.5f, -2.5f, 0.0f);
+	cube->transform->position += glm::vec3(2.5f, -2.5f, 0.0f);
 
-	shader->setMVP(vp*cubeTransform->getTransform());
+	shader->setMVP(vp*cube->transform->getTransform());
 	cube->draw();
 
-	cubeTransform->position += glm::vec3(-2.5f, -2.5f, 0.0f);
+	cube->transform->position += glm::vec3(-2.5f, -2.5f, 0.0f);
 
-	shader->setMVP(vp*cubeTransform->getTransform());
+	shader->setMVP(vp*cube->transform->getTransform());
 	cube->draw();
 
-	cubeTransform->position += glm::vec3(-2.5f, 2.5f, 0.0f);
+	cube->transform->position += glm::vec3(-2.5f, 2.5f, 0.0f);
 
-	shader->setMVP(vp*cubeTransform->getTransform());
+	shader->setMVP(vp*cube->transform->getTransform());
 	cube->draw();
 
-	if (cubeTransform->position.y > 2.5f) { 
-		cubeTransform->position = glm::vec3(0.0f, 2.5f, 0.0f);
+	if (cube->transform->position.y > 2.5f) { 
+		cube->transform->position = glm::vec3(0.0f, 2.5f, 0.0f);
 		sobe = false; 
 	}
-	else if (cubeTransform->position.y < -1.0f) { 
-		cubeTransform->position = glm::vec3(0.0f, -1.0f, 0.0f);
+	else if (cube->transform->position.y < -1.0f) { 
+		cube->transform->position = glm::vec3(0.0f, -1.0f, 0.0f);
 		sobe = true; 
 	}
 
 	if (sobe) {
-		cubeTransform->position += glm::vec3(0.0f, 0.1f, 0.0f);
+		cube->transform->position += glm::vec3(0.0f, 0.1f, 0.0f);
 	}
 	else {
-		cubeTransform->position += glm::vec3(0.0f, -0.1f, 0.0f);
+		cube->transform->position += glm::vec3(0.0f, -0.1f, 0.0f);
 	}
 
-	shader->setMVP(vp*cubeTransform->getTransform());
+	shader->setMVP(vp*cube->transform->getTransform());
 	cube->draw();
 */
 	/*
-	cubeTransform->position += glm::vec3(0.0f, 0.0f, 2.5f);
-	shader->setMVP(vp*cubeTransform->getTransform());
+	cube->transform->position += glm::vec3(0.0f, 0.0f, 2.5f);
+	shader->setMVP(vp*cube->transform->getTransform());
 	cube->draw();*/
 
 
@@ -118,9 +123,9 @@ void draw(glm::mat4 projectionMatrix, glm::mat4 viewMatrix, Camera* camera) {
 		for (int j = 0; j <= 10; j++){
 			for (int k = 0; k <= 10; k++) {
 
-			cubeTransform->position = glm::vec3(float(i) * 4.0f , float(k) * 4.0f, float(j) * 4.0f);
+			cube->transform->position = glm::vec3(float(i) * 4.0f , float(k) * 4.0f, float(j) * 4.0f);
 
-			shader->setMVP(vp*cubeTransform->getTransform());
+			shader->setMVP(vp*cube->transform->getTransform());
 			
 			cube->draw();
 			}
@@ -134,7 +139,7 @@ void keyboard(SDL_Event event) { }
 
 void end() {
 	delete cube;
-	delete cubeTransform;
+	delete sphere;
 	delete shader;
 	delete app;
 }

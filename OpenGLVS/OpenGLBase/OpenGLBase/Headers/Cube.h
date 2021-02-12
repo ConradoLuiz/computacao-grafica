@@ -15,7 +15,7 @@ public:
 	Cube();
 	virtual ~Cube();
 	virtual void draw();
-
+	Transform *transform;
 private:
 	GLuint cubeVertexArrayId;
 	GLuint cubeVertexBufferId;

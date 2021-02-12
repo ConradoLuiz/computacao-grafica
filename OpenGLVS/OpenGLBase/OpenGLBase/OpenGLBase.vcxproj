@@ -134,6 +134,7 @@
     <ClCompile Include="App.cpp" />
     <ClCompile Include="Cube.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Sphere.cpp" />
     <ClCompile Include="vendor\ImGui\imgui.cpp" />
     <ClCompile Include="vendor\ImGui\imgui_demo.cpp" />
     <ClCompile Include="vendor\ImGui\imgui_draw.cpp" />
@@ -164,6 +165,7 @@
     <ClInclude Include="Headers\VertexArray.h" />
     <ClInclude Include="Headers\VertexBuffer.h" />
     <ClInclude Include="Headers\VertexBufferLayout.h" />
+    <ClInclude Include="Headers\Sphere.h" />
     <ClInclude Include="vendor\ImGui\imconfig.h" />
     <ClInclude Include="vendor\ImGui\imgui.h" />
     <ClInclude Include="vendor\ImGui\imgui_impl_opengl3.h" />

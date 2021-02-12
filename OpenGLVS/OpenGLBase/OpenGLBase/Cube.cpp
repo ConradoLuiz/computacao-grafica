@@ -2,6 +2,8 @@
 
 Cube::Cube()
 {
+	transform = new Transform(glm::vec3(3.0f));
+
 	float cubeVertex[] =
 	{
 		//POSITIONS             //COLORS             // TEX COORDS   //NORMALS
@@ -121,6 +123,7 @@ Cube::~Cube()
 	//delete m_color_vbo;
 	delete m_ebo;
 	delete m_vao;
+	delete transform;
 }
 
 void Cube::draw()
