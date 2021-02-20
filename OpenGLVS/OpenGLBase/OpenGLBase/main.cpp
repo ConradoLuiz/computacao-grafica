@@ -43,7 +43,7 @@ void draw(glm::mat4 projectionMatrix, glm::mat4 viewMatrix, Camera* camera) {
 	camera->update();
 
 	shader->setMVP(vp*cube->transform->getTransform());
-	cube->draw();
+	//cube->draw();
 
 	shader->setMVP(vp*sphere->transform->getTransform());
 	sphere->draw();

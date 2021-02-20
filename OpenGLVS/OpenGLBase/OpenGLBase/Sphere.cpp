@@ -42,7 +42,8 @@ void Sphere::draw()
 	m_vao->Bind();
 	m_ebo->Bind();
 	glBindTexture(GL_TEXTURE_2D, m_tex2d);
-	glDrawElements(GL_POINTS, indeces.size(), GL_UNSIGNED_INT, 0);
+	//glDrawElements(GL_POINTS, indeces.size(), GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, indeces.size(), GL_UNSIGNED_INT, 0);
 }
 
 void Sphere::GenerateVertices()
@@ -57,6 +58,9 @@ void Sphere::GenerateVertices()
 	float delta_teta = 1 / (float)m_resolution;
 	float delta_phi   = 1 / (float)m_resolution;
 
+	int next_teta = glm::pi<float>() / delta_teta + 1;
+	int next_phi = glm::two_pi<float>() / delta_phi + 1;
+
 	//std::cout << glm::two_pi<float>();
 	
 	vertices.push_back({
@@ -67,26 +71,34 @@ void Sphere::GenerateVertices()
 		zero,
 		zero
 	});
+
 	indeces.push_back(0);
+	indeces.push_back(1);
+	indeces.push_back(0 + next_teta);
+
+	indeces.push_back(0 + 1 + next_teta);
+	indeces.push_back(0 + 1);
+	indeces.push_back(0 + 2 + next_teta);
 
 	unsigned int index = 1;
 	
-	for (teta = delta_teta; teta <= glm::pi<float>(); teta += delta_teta)
+	for (phi = delta_phi; phi <= glm::two_pi<float>() + delta_phi; phi += delta_phi)
 	{
-		for (phi = 0.0f; phi <= glm::two_pi<float>(); phi += delta_phi)
+		for (teta = 0; teta <= glm::pi<float>(); teta += delta_teta)
 		{
-			//COLOCAR GLM POLAR COORDINATES
-			glm::vec3 pos;
+			glm::vec3 polar(m_radius, teta, phi);
+
+			glm::vec3 pos = polarToCart(polar);
 			
-			pos.x = m_radius * glm::sin(teta) * glm::cos(phi);
-			pos.z = m_radius * glm::sin(teta) * glm::sin(phi);
-			pos.y = m_radius * glm::cos(teta);
+			float aux = pos.y;
+			pos.y = pos.z;
+			pos.z = aux;
 
 			glm::vec3 normal = glm::normalize(pos - zero);
 
 			vertices.push_back({
 				pos,
-				glm::vec3(1.0f),
+				pos,
 				glm::vec2(0.5f),
 				normal,
 				zero,
@@ -94,7 +106,15 @@ void Sphere::GenerateVertices()
 			});
 
 			indeces.push_back(index);
+			indeces.push_back(index + 1);
+			indeces.push_back(index + 1 + next_teta);
+
+			indeces.push_back(index + 1 + next_teta);
+			indeces.push_back(index + 1);
+			indeces.push_back(index + 2 + next_teta);
+
 			index++;
+
 		}
 	}
 
@@ -147,4 +167,15 @@ void Sphere::GenerateVertices()
 	//indeces.push_back(0);
 	//indeces.push_back(1);
 	//indeces.push_back(2);
+}
+
+glm::vec3 Sphere::polarToCart(glm::vec3 &polar)
+{
+	glm::vec3 v;
+
+	v.x = polar.x * glm::sin(polar.y) * glm::cos(polar.z);
+	v.y = polar.x * glm::sin(polar.y) * glm::sin(polar.z);
+	v.z = polar.x * glm::cos(polar.y);
+
+	return v;
 }
